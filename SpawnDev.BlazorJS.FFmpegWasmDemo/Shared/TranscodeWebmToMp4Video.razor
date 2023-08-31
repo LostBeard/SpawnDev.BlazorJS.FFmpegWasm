@@ -1,0 +1,215 @@
+﻿@implements IDisposable
+@using System.Text
+@using System.Diagnostics
+
+<div>
+    <h3>@title</h3>
+    <div style="@(loaded ? "" : "display: none;")">
+        <video @ref=videoRef controls autoplay muted></video>
+        <br />
+        <button @onclick=Transcode>Transcode webm to mp4</button>
+        <p>Open Developer Tools (Ctrl+Shift+I) to View Logs</p>
+    </div>
+    <div style="@(loaded ? "display: none;" : "")">
+        <button disabled="@loadDisabled" @onclick=Load>@loadButtonText</button>
+    </div>
+    <p>Multi-thread Supported: @MultiThreadSupported</p>
+    <p>@LogMessage</p>
+    <p>@ProgressMessage</p>
+    <p>@(Math.Round(Stopwatch.Elapsed.TotalSeconds, 1)) seconds elapsed</p>
+</div>
+
+@code {
+    /// <summary>
+    /// Based on:
+    /// https://ffmpegwasm.netlify.app/docs/getting-started/usage/
+    /// </summary>
+
+    public enum ThreadMode
+    {
+        AUTO,
+        SINGLE_THREAD,
+        MULTI_THREAD,
+    }
+
+    [Parameter]
+    public ThreadMode FFmpegThreadMode { get; set; } = ThreadMode.AUTO;
+
+    [Inject]
+    BlazorJSRuntime JS { get; set; }
+
+    [Inject]
+    HttpClient HttpClient { get; set; }
+
+    bool loaded = false;
+    bool loadDisabled = false;
+    string title = "";
+    string loadButtonText = "";
+    ElementReference videoRef;
+    HTMLVideoElement? videoEl = null;
+    FFmpeg? FFmpeg = null;
+    string LogMessage = "";
+    string ProgressMessage = "";
+    Stopwatch Stopwatch = new Stopwatch();
+    string FFmpegVersion = "0.12.6";
+    string CoreVersion = "0.12.3";
+    string CoreMTVersion = "0.12.3";
+    string FFmpegObjUrl = "";
+    string FFmpeg814ObjUrl = "";
+    bool MultiThreadSupported = false;
+
+    protected override void OnInitialized()
+    {
+        MultiThreadSupported = JS.CrossOriginIsolated && !JS.IsUndefined(nameof(SharedArrayBuffer));
+        switch (FFmpegThreadMode)
+        {
+            case ThreadMode.SINGLE_THREAD:
+                title = "Transcode webm to mp4 video (single-thread)";
+                loadButtonText = "Load ffmpeg-core single-thread(~31 MB)";
+                break;
+            case ThreadMode.MULTI_THREAD:
+                title = "Transcode webm to mp4 video (multi-thread)";
+                loadButtonText = "Load ffmpeg-core multi-thread (~31 MB)";
+                if (!MultiThreadSupported)
+                {
+                    loadDisabled = true;
+                    LogMessage = "Multithread mode requires SharedArrayBuffer. See MDN SharedArrayBuffer documentation for more info.";
+                }
+                break;
+            case ThreadMode.AUTO:
+                title = "Transcode webm to mp4 video (auto detect)";
+                loadButtonText = "Load ffmpeg-core auto detect (~31 MB)";
+                break;
+        }
+    }
+
+    async Task Load()
+    {
+        if (loaded) return;
+        Stopwatch.Restart();
+        var ffmpegBaseURL = $"https://unpkg.com/@ffmpeg/ffmpeg@{FFmpegVersion}/dist/umd/";
+        if (JS.IsUndefined("FFmpegWASM"))
+        {
+            FFmpegObjUrl = await toBlobURL($"{ffmpegBaseURL}ffmpeg.js", "application/javascript", (js) =>
+            {
+                // a quick patch to allow us the ability to specify the full path to the primary ffmpeg worker (814.ffmpeg.js) via our FFMessageLoadConfig
+                // the ffmpeg.js script tries to build the path location itself (with the code being replaced) but will
+                // fail (in our scenario) so we patch it to allow us to specify the path
+                return js.Replace("new URL(e.p+e.u(814),e.b)", "r.worker814URL");
+            });
+            using var FFmpegWASM = await JS.Import(FFmpegObjUrl);
+            if (FFmpegWASM == null) throw new Exception($"FFmpegWasm could not be initialized.");
+        }
+        videoEl = new HTMLVideoElement(videoRef);
+        FFmpeg = new FFmpeg();
+        FFmpeg.OnLog += FFmpeg_OnLog;
+        FFmpeg.OnProgress += FFmpeg_OnProgress;
+        // toBlobURL is used to bypass CORS issue
+        // URLs with the same domain can be used directly.
+        if (string.IsNullOrEmpty(FFmpeg814ObjUrl))
+        {
+            FFmpeg814ObjUrl = await toBlobURL($"{ffmpegBaseURL}814.ffmpeg.js", "application/javascript");
+        }
+        var config = new FFMessageLoadConfig { Worker814URL = FFmpeg814ObjUrl };
+        var useThreading = FFmpegThreadMode == ThreadMode.MULTI_THREAD || (FFmpegThreadMode == ThreadMode.AUTO && MultiThreadSupported);
+        if (useThreading)
+        {
+            var baseURL = $"https://unpkg.com/@ffmpeg/core-mt@{CoreMTVersion}/dist/umd/";
+            config.CoreURL = await toBlobURL($"{baseURL}ffmpeg-core.js", "application/javascript");
+            config.WasmURL = await toBlobURL($"{baseURL}ffmpeg-core.wasm", "application/wasm");
+            config.WorkerURL = await toBlobURL($"{baseURL}ffmpeg-core.worker.js", "application/javascript");
+        }
+        else
+        {
+            var baseURL = $"https://unpkg.com/@ffmpeg/core@{CoreVersion}/dist/umd/";
+            config.CoreURL = await toBlobURL($"{baseURL}ffmpeg-core.js", "application/javascript");
+            config.WasmURL = await toBlobURL($"{baseURL}ffmpeg-core.wasm", "application/wasm");
+        }
+        try
+        {
+            await FFmpeg.Load(config);
+            loaded = true;
+            LogMessage = "FFmpeg loaded: " + (MultiThreadSupported ? "multithread" : "single thread");
+        }
+        catch
+        {
+            LogMessage = "FFmpeg load failed: " + (MultiThreadSupported ? "multithread" : "single thread");
+        }
+        Stopwatch.Stop();
+        StateHasChanged();
+    }
+
+    async Task Transcode()
+    {
+        LogMessage = "Downloading source video";
+        StateHasChanged();
+        await FFmpeg.WriteFile("input.webm", await FetchFile("https://raw.githubusercontent.com/ffmpegwasm/testdata/master/Big_Buck_Bunny_180_10s.webm"));
+        Stopwatch.Restart();
+        LogMessage = "Transcoding source video";
+        StateHasChanged();
+        var ret = await FFmpeg.Exec(new string[] { "-i", "input.webm", "output.mp4" });
+        Stopwatch.Stop();
+        LogMessage = "Source video transcoded";
+        StateHasChanged();
+        using var data = await FFmpeg.ReadFileUInt8Array("output.mp4");
+        if (videoEl != null)
+        {
+            using var arrayBuffer = data.Buffer;
+            using var blob = new Blob(new ArrayBuffer[] { arrayBuffer }, new BlobOptions { Type = "video/mp4" });
+            var objSrc = URL.CreateObjectURL(blob);
+            videoEl.Src = objSrc;
+            videoEl.Load();
+        }
+    }
+
+    async Task<string> toBlobURL(string src, string mimeType)
+    {
+        var bytes = await HttpClient.GetByteArrayAsync(src);
+        using var blob = new Blob(new byte[][] { bytes }, new BlobOptions { Type = mimeType });
+        return URL.CreateObjectURL(blob);
+    }
+
+    async Task<string> toBlobURL(string src, string mimeType, Func<string, string> patcher)
+    {
+        var text = await HttpClient.GetStringAsync(src);
+        text = patcher(text);
+        var bytes = Encoding.UTF8.GetBytes(text);
+        using var blob = new Blob(new byte[][] { bytes }, new BlobOptions { Type = mimeType });
+        return URL.CreateObjectURL(blob);
+    }
+
+    void FFmpeg_OnLog(FFmpegLogEvent ev)
+    {
+        LogMessage = ev.Message;
+        JS.Log("FFmpeg_OnLog", ev.Message);
+        StateHasChanged();
+    }
+
+    void FFmpeg_OnProgress(FFmpegProgressEvent ev)
+    {
+        var progress = ev.Progress;
+        var time = ev.Time;
+        ProgressMessage = $"{progress * 100} % (transcoded time: {time / 1000000} s)";
+        JS.Log("FFmpeg_OnProgress", ev.Time, ev.Progress);
+        StateHasChanged();
+    }
+
+    Task<byte[]> FetchFile(string src) => HttpClient.GetByteArrayAsync(src);
+
+    public void Dispose()
+    {
+        if (FFmpeg != null)
+        {
+            FFmpeg.OnLog -= FFmpeg_OnLog;
+            FFmpeg.OnProgress -= FFmpeg_OnProgress;
+            FFmpeg.Terminate();
+            FFmpeg.Dispose();
+            FFmpeg = null;
+        }
+        if (videoEl != null)
+        {
+            videoEl.Dispose();
+            videoEl = null;
+        }
+    }
+}

@@ -1,0 +1,13 @@
+﻿@page "/"
+
+<PageTitle>SpawnDev.BlaozrJS.FFmpegWasm Demo</PageTitle>
+
+<h1>SpawnDev.BlaozrJS.FFmpegWasm</h1>
+<div>
+    SpawnDev.BlaozrJS.FFmpegWasm is a Blaozr WASM wrapper around <a href="https://ffmpegwasm.netlify.app/" target="_blank">ffmpeg.wasm</a>. This is a demo of that wrapper.
+</div>
+<div>
+    <TranscodeWebmToMp4Video FFmpegThreadMode="TranscodeWebmToMp4Video.ThreadMode.SINGLE_THREAD"></TranscodeWebmToMp4Video>
+    <TranscodeWebmToMp4Video FFmpegThreadMode="TranscodeWebmToMp4Video.ThreadMode.MULTI_THREAD"></TranscodeWebmToMp4Video>
+    <TranscodeWebmToMp4Video FFmpegThreadMode="TranscodeWebmToMp4Video.ThreadMode.AUTO"></TranscodeWebmToMp4Video>
+</div>

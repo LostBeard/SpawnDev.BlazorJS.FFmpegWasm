@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34004.107
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpawnDev.BlazorJS.FFmpegWasm", "SpawnDev.BlazorJS.FFmpegWasm\SpawnDev.BlazorJS.FFmpegWasm.csproj", "{F16C9DE5-3CB6-4046-A31E-717B220F5FC0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpawnDev.BlazorJS.FFmpegWasmDemo", "SpawnDev.BlazorJS.FFmpegWasmDemo\SpawnDev.BlazorJS.FFmpegWasmDemo.csproj", "{DDC6559F-0A32-4707-92BC-E15C31DB5937}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F16C9DE5-3CB6-4046-A31E-717B220F5FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F16C9DE5-3CB6-4046-A31E-717B220F5FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F16C9DE5-3CB6-4046-A31E-717B220F5FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F16C9DE5-3CB6-4046-A31E-717B220F5FC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDC6559F-0A32-4707-92BC-E15C31DB5937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDC6559F-0A32-4707-92BC-E15C31DB5937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDC6559F-0A32-4707-92BC-E15C31DB5937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDC6559F-0A32-4707-92BC-E15C31DB5937}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3D5D34C3-34FA-44FA-AFC2-34E2A1667956}
+	EndGlobalSection
+EndGlobal
