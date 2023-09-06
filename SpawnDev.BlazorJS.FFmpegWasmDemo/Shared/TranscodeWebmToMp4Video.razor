@@ -116,7 +116,7 @@
         Stopwatch.Stop();
         LogMessage = "Source video transcoded";
         StateHasChanged();
-        using var data = await FFmpeg.ReadFileUInt8Array("output.mp4");
+        using var data = await FFmpeg.ReadFileUint8Array("output.mp4");
         if (videoEl != null)
         {
             using var blob = new Blob(new Uint8Array[] { data }, new BlobOptions { Type = "video/mp4" });

@@ -82,7 +82,7 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         public Task<bool> DeleteFile(string path) => JSRef.CallAsync<bool>("deleteFile", path);
         // Read
         public Task<string> ReadFileUTF8(string path) => JSRef.CallAsync<string>("readFile", path, "utf8");
-        public Task<Uint8Array> ReadFileUInt8Array(string path) => JSRef.CallAsync<Uint8Array>("readFile", path, "binary");
+        public Task<Uint8Array> ReadFileUint8Array(string path) => JSRef.CallAsync<Uint8Array>("readFile", path, "binary");
         public Task<byte[]> ReadFileBytes(string path) => JSRef.CallAsync<byte[]>("readFile", path, "binary");
         // Write
         public Task<bool> WriteFile(string path, string data) => JSRef.CallAsync<bool>("writeFile", path, data);
