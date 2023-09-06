@@ -16,6 +16,9 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
     public class FFmpeg : JSObject
     {
         public FFmpeg(IJSInProcessObjectReference _ref) : base(_ref) { }
+        /// <summary>
+        /// Constructs a new FFmpeg instance (umd version)
+        /// </summary>
         public FFmpeg() : base(JS.New("FFmpegWASM.FFmpeg")) { }
         public Task<bool> Load(FFMessageLoadConfig config) => JSRef.CallAsync<bool>("load", config);
         public Task<bool> Load() => JSRef.CallAsync<bool>("load");

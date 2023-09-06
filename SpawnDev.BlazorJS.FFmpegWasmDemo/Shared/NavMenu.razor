@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">SpawnDev.BlazorJS.FFmpegWasmDemo</a>
+        <a class="navbar-brand" href="">FFmpegWasm in Blazor</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,8 +11,36 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill" aria-hidden="true"></span> Home
+                <span class="bi bi-lightning" aria-hidden="true"></span> Basic Example
             </NavLink>
+        </div>
+    </nav>
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="BasicFactoryExample" Match="NavLinkMatch.Prefix">
+                <span class="bi bi-lightning" aria-hidden="true"></span> FFmpegFactory Example
+            </NavLink>
+        </div>
+    </nav>
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MultipleExamples" Match="NavLinkMatch.Prefix">
+                <span class="bi bi-lightning" aria-hidden="true"></span> Other Examples
+            </NavLink>
+        </div>
+    </nav>
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="https://ffmpegwasm.netlify.app/" target="_blank" Match="NavLinkMatch.Prefix">
+                <span class="bi bi-link" aria-hidden="true"></span> ffmpeg.wasm Home
+            </NavLink>
+        </div>
+    </nav>
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <a class="nav-link" href="https://github.com/ffmpegwasm/ffmpeg.wasm" target="_blank" Match="NavLinkMatch.Prefix">
+                <span class="bi bi-link" aria-hidden="true"></span> ffmpeg.wasm GitHub
+            </a>
         </div>
     </nav>
 </div>
