@@ -70,7 +70,7 @@ The below code is taken from [BasicFactoryExample.razor](https://github.com/Lost
         var ret = await ffmpeg.Exec(new string[] { "-i", "input.webm", "output.mp4" });
         logMessage = "Source video transcoded";
         StateHasChanged();
-        using var data = await ffmpeg.ReadFileUInt8Array("output.mp4");
+        using var data = await ffmpeg.ReadFileUint8Array("output.mp4");
         using var blob = new Blob(new Uint8Array[] { data }, new BlobOptions { Type = "video/mp4" });
         var objSrc = URL.CreateObjectURL(blob);
         videoEl.Src = objSrc;
@@ -172,7 +172,7 @@ The below code is taken from [BasicExample.razor](https://github.com/LostBeard/S
         var ret = await ffmpeg.Exec(new string[] { "-i", "input.webm", "output.mp4" });
         logMessage = "Source video transcoded";
         StateHasChanged();
-        using var data = await ffmpeg.ReadFileUInt8Array("output.mp4");
+        using var data = await ffmpeg.ReadFileUint8Array("output.mp4");
         using var blob = new Blob(new Uint8Array[] { data }, new BlobOptions { Type = "video/mp4" });
         var objSrc = URL.CreateObjectURL(blob);
         videoEl.Src = objSrc;
