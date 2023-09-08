@@ -8,11 +8,6 @@ using System.Threading.Tasks;
 
 namespace SpawnDev.BlazorJS.FFmpegWasm
 {
-    public static class FFmpegWasmContent
-    {
-        public const string FFmpegJSURL = "./_content/SpawnDev.BlazorJS.FFmpegWasm/ffmpeg.js";
-        public const string FFmpeg814JSURL = "./_content/SpawnDev.BlazorJS.FFmpegWasm/814.ffmpeg.js";
-    }
     public class FFmpeg : JSObject
     {
         public FFmpeg(IJSInProcessObjectReference _ref) : base(_ref) { }

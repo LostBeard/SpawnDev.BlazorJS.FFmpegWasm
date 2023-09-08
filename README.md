@@ -9,10 +9,10 @@ The SpawnDev.BlazorJS.FFmpegWasm Nuget wraps [ffmpeg.wasm](https://github.com/ff
 FFmpegFactory is an optional service that can handle importing FFmpegWasm and includes helper methods like ToBlobURL, FetchFile, and CreateDefaultConfig.
 
 ### With FFmpegFactory
-The below code is taken from [BasicFactoryExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicFactoryExample.razor) and demonstrates using the FFmpegFactory service from SpawnDev.BlazorJS.FFmpegWasm. 
+Source [BasicFactoryExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicFactoryExample.razor) 
 
 <details>
-<summary>Example code with FFmpegFactory</summary>
+<summary>Example code</summary>
 
 ```cs
 @page "/BasicFactoryExample"
@@ -107,11 +107,10 @@ The below code is taken from [BasicFactoryExample.razor](https://github.com/Lost
 </details>
 
 ### Without FFmpegFactory
-Or you can use FFmpegWasm without the FFmpegFactory.
-The below code is taken from [BasicExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicExample.razor)
+Source [BasicExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicExample.razor)
 
 <details>
-<summary>Example code without FFmpegFactory</summary>
+<summary>Example code</summary>
 
 ```cs
 @page "/"
