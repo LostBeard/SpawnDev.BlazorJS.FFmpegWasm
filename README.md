@@ -53,15 +53,24 @@ Source [BasicFactoryExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJ
         busy = true;
         StateHasChanged();
         videoEl = new HTMLVideoElement(videoResult);
-        // FFmpegFactory handles importing umd version of FFmpegWasm and patching ffmpeg.js
         await FFmpegFactory.Init();
         ffmpeg = new FFmpeg();
         ffmpeg.OnLog += FFmpeg_OnLog;
         ffmpeg.OnProgress += FFmpeg_OnProgress;
-        // FFmpegFactory.CreateDefaultConfig creates a config by loading ffmpeg/core or ffmpeg/core-mt (if allowMultiThreading && SharedArrayBuffer is available) from unpkg.com
-        // latest version (at time of SpawnDev.BlazorJS.FFmpegWasm build) are used but other versions can be set
-        var defaultConfig = await FFmpegFactory.CreateDefaultConfig(allowMultiThreading: true);
-        await ffmpeg.Load(defaultConfig);
+        // Use FFmpegFactory extension methods supplied by the Nuget packages
+        // SpawnDev.BlazorJS.FFmpegWasm.Core
+        // SpawnDev.BlazorJS.FFmpegWasm.CoreMT
+        //
+        // Single thread and multi thread versions acn be used independently of each other to lower resource packaging.
+        //
+        // From SpawnDev.BlazorJS.FFmpegWasm.Core 
+        // - Contains the ffmpeg.wasm core for single thread files
+        // - Adds CreateLoadCoreConfig to FFmpegFactory
+        // From SpawnDev.BlazorJS.FFmpegWasm.CoreMT 
+        // - Contains the ffmpeg.wasm core for multi thread files
+        // - Adds CreateLoadCoreMTConfig to FFmpegFactory
+        var loadConfig = FFmpegFactory.MultiThreadSupported ? FFmpegFactory.CreateLoadCoreMTConfig() : FFmpegFactory.CreateLoadCoreConfig();
+        await ffmpeg.Load(loadConfig);
         busy = false;
         loaded = true;
         StateHasChanged();

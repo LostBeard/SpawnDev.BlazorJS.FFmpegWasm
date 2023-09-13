@@ -45,6 +45,17 @@
         ffmpeg = new FFmpeg();
         ffmpeg.OnLog += FFmpeg_OnLog;
         ffmpeg.OnProgress += FFmpeg_OnProgress;
+        // Use FFmpegFactory extension methods supplied by the Nuget packages
+        // SpawnDev.BlazorJS.FFmpegWasm.Core
+        // SpawnDev.BlazorJS.FFmpegWasm.CoreMT
+        //
+        // From SpawnDev.BlazorJS.FFmpegWasm.Core 
+        // - Contains the ffmpeg.wasm core for single thread files
+        // - Adds CreateLoadCoreConfig to FFmpegFactory
+        // From SpawnDev.BlazorJS.FFmpegWasm.CoreMT 
+        // - Contains the ffmpeg.wasm core for multi thread files
+        // - Adds CreateLoadCoreMTConfig to FFmpegFactory
+        // Single thread and multi thread versions acn be used independently of each other to lower resource packaging.
         var loadConfig = FFmpegFactory.MultiThreadSupported ? FFmpegFactory.CreateLoadCoreMTConfig() : FFmpegFactory.CreateLoadCoreConfig();
         await ffmpeg.Load(loadConfig);
         busy = false;
