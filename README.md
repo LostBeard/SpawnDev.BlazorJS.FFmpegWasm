@@ -8,8 +8,8 @@
 | Package | Description |
 |---------|-------------|
 |**SpawnDev.BlazorJS.FFmpegWasm** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm)| ffmpeg.wasm for Blazor WASM | 
-|**SpawnDev.BlazorJS.FFmpegWasm.Core** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.Core.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core)| SpawnDev.BlazorJS.Includes FFmpegWasm and ffmpeg.wasm core resources | 
-|**SpawnDev.BlazorJS.FFmpegWasm.CoreMT** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT)| SpawnDev.BlazorJS.Includes FFmpegWasm and ffmpeg.wasm core-mt resources | 
+|**SpawnDev.BlazorJS.FFmpegWasm.Core** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.Core.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core)| Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core resources | 
+|**SpawnDev.BlazorJS.FFmpegWasm.CoreMT** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT)| Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core-mt resources | 
  
 The SpawnDev.BlazorJS.FFmpegWasm Nuget wraps [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) with a [JSObject](https://github.com/LostBeard/SpawnDev.BlazorJS#jsobject-base-class) allowing it to be used in Blazor WASM. 
 
