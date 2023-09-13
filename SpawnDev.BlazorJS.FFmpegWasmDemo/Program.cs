@@ -14,19 +14,13 @@ namespace SpawnDev.BlazorJS.FFmpegWasmDemo
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
-
             builder.Services.AddBlazorJSRuntime();
-
             builder.Services.AddSingleton<FFmpegFactory>();
-
             builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
+#if DEBUG
             var host = builder.Build();
-
-
             var JS = BlazorJSRuntime.JS;
             JS.Log(nameof(JS.CrossOriginIsolated), JS.CrossOriginIsolated);
-
             //using var http = new HttpClient();
             //try
             //{
@@ -38,6 +32,9 @@ namespace SpawnDev.BlazorJS.FFmpegWasmDemo
             //    var nmt = true;
             //}
             await host.BlazorJSRunAsync();
+#else
+            await builder.Build().BlazorJSRunAsync();
+#endif
         }
     }
 }

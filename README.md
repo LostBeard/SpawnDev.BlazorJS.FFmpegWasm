@@ -11,7 +11,9 @@
 |**SpawnDev.BlazorJS.FFmpegWasm.Core** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.Core.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core)| Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core resources | core/*<br />ffmpeg-core.js<br />ffmpeg-core.wasm
 |**SpawnDev.BlazorJS.FFmpegWasm.CoreMT** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT)| Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core-mt resources | core-mt/*<br />ffmpeg-core.js<br />ffmpeg-core.wasm<br />ffmpeg-core.worker.js
  
-The SpawnDev.BlazorJS.FFmpegWasm Nuget wraps [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) with a [JSObject](https://github.com/LostBeard/SpawnDev.BlazorJS#jsobject-base-class) allowing it to be used in Blazor WASM. 
+[ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) is a pure Webassembly / Javascript port of FFmpeg. It enables video & audio record, convert and stream right inside browsers.
+
+SpawnDev.BlazorJS.FFmpegWasm uses [SpawnDev.BlazorJS](https://github.com/LostBeard/SpawnDev.BlazorJS) [JSObjects](https://github.com/LostBeard/SpawnDev.BlazorJS#jsobject-base-class) to bring [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) into Blazor WASM apps. A slightly customized version of ffmpeg.wasm ([repo here](https://github.com/LostBeard/ffmpeg.wasm)) is used to add additional functionality to the base version. Additions like WORKERFS support which allows directly reading input files from the native filesystem in supported browsers and also adds support for files larger than 4 Gb.
 
 [Live Demo](https://lostbeard.github.io/SpawnDev.BlazorJS.FFmpegWasm/)
 
@@ -24,6 +26,19 @@ Source [BasicFactoryExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJ
 <details>
 <summary>Example code</summary>
 
+Program.cs
+```cs
+// ...
+// Add SpawnDev.BlazorJS.BlazorJSRuntime service
+builder.Services.AddBlazorJSRuntime();
+// Add FFmpegFactory service
+builder.Services.AddSingleton<FFmpegFactory>();
+// ...
+// Init SpawnDev.BlazorJS
+await builder.Build().BlazorJSRunAsync();
+```
+
+BasicFactoryExample.razor
 ```cs
 @page "/BasicFactoryExample"
 @using System.Text
