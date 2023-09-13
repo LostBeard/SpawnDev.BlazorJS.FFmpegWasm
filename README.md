@@ -34,8 +34,6 @@ builder.Services.AddBlazorJSRuntime();
 // Add FFmpegFactory service
 builder.Services.AddSingleton<FFmpegFactory>();
 // ...
-// Init SpawnDev.BlazorJS
-await builder.Build().BlazorJSRunAsync();
 ```
 
 BasicFactoryExample.razor
@@ -152,8 +150,6 @@ Program.cs
 // Add SpawnDev.BlazorJS.BlazorJSRuntime service
 builder.Services.AddBlazorJSRuntime();
 // ...
-// Init SpawnDev.BlazorJS
-await builder.Build().BlazorJSRunAsync();
 ```
 
 BasicExample.razor

@@ -21,6 +21,8 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
     // https://unpkg.com/@ffmpeg/core-mt/dist/umd/ffmpeg-core.js
     // https://unpkg.com/@ffmpeg/core-mt/dist/umd/ffmpeg-core.wasm
     // https://unpkg.com/@ffmpeg/core-mt/dist/umd/ffmpeg-core.worker.js
+    //
+    // https://github.com/emscripten-core/emscripten/blob/1.29.12/src/library_idbfs.js
     public class FFmpegFactory : IDisposable
     {
         const string RootPath = "_content/SpawnDev.BlazorJS.FFmpegWasm";
