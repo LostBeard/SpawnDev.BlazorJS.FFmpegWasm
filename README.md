@@ -146,6 +146,17 @@ Source [BasicExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpe
 <details>
 <summary>Example code</summary>
 
+Program.cs
+```cs
+// ...
+// Add SpawnDev.BlazorJS.BlazorJSRuntime service
+builder.Services.AddBlazorJSRuntime();
+// ...
+// Init SpawnDev.BlazorJS
+await builder.Build().BlazorJSRunAsync();
+```
+
+BasicExample.razor
 ```cs
 @page "/"
 @using System.Text
