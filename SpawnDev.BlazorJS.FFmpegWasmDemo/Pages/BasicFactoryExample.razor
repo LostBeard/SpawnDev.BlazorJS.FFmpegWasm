@@ -5,6 +5,7 @@
 
 <h3>Basic FFmpegFactory Example of ffmpeg.wasm in Blazor</h3>
 <p>A bare bones example of ffmpeg.wasm in Blazor using SpawnDev.BlazorJS and SpawnDev.BlazorJS.FFmpegWASM</p>
+<p>This example uses a slightly customized version of ffmpeg.wasm that is bundled with the referenced Nuget packages. SpawnDev.BlazorJS.FFmpegWasm.Core is used if multithreading is not supported and SpawnDev.BlazorJS.FFmpegWasm.CoreMT is used if it is.</p>
 <video @ref=videoResult autoplay muted id="video-result" controls></video>
 <br />
 <button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
