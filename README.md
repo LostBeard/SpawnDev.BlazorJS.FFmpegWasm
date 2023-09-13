@@ -1,6 +1,10 @@
 # SpawnDev.BlazorJS.FFmpegWasm
 [![NuGet](https://img.shields.io/nuget/dt/SpawnDev.BlazorJS.FFmpegWasm.svg?label=SpawnDev.BlazorJS.FFmpegWasm)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm) 
 
+[![NuGet](https://img.shields.io/nuget/dt/SpawnDev.BlazorJS.FFmpegWasm.Core.svg?label=SpawnDev.BlazorJS.FFmpegWasm.Core)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core) 
+
+[![NuGet](https://img.shields.io/nuget/dt/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg?label=SpawnDev.BlazorJS.FFmpegWasm.CoreMT)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT) 
+
 The SpawnDev.BlazorJS.FFmpegWasm Nuget wraps [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) with a [JSObject](https://github.com/LostBeard/SpawnDev.BlazorJS#jsobject-base-class) allowing it to be used in Blazor WASM. 
 
 [Live Demo](https://lostbeard.github.io/SpawnDev.BlazorJS.FFmpegWasm/)
