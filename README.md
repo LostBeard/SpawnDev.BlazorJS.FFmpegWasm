@@ -8,7 +8,7 @@ The SpawnDev.BlazorJS.FFmpegWasm Nuget wraps [ffmpeg.wasm](https://github.com/ff
 ## FFmpegFactory
 FFmpegFactory is an optional service that can handle importing FFmpegWasm and includes helper methods like ToBlobURL, FetchFile, and CreateDefaultConfig.
 
-### With FFmpegFactory
+#### With FFmpegFactory
 Source [BasicFactoryExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicFactoryExample.razor) 
 
 <details>
@@ -106,7 +106,7 @@ Source [BasicFactoryExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJ
 ```
 </details>
 
-### Without FFmpegFactory
+#### Without FFmpegFactory
 Source [BasicExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicExample.razor)
 
 <details>

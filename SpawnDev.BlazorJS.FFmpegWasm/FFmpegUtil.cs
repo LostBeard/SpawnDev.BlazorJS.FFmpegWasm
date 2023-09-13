@@ -28,7 +28,7 @@
 //            {
 //                FFmpeg814ObjUrl = await ToBlobURL($"{ffmpegBaseURL}814.ffmpeg.js", "application/javascript");
 //            }
-//            var config = new FFMessageLoadConfig { Worker814URL = FFmpeg814ObjUrl };
+//            var config = new FFMessageLoadConfig { WorkerLoadURL = FFmpeg814ObjUrl };
 //            var useThreading = MultiThreadSupported);
 //            if (useThreading)
 //            {

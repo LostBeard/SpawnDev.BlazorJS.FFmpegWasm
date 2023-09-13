@@ -89,10 +89,10 @@
         FFmpeg.OnLog += FFmpeg_OnLog;
         FFmpeg.OnProgress += FFmpeg_OnProgress;
         var useThreading = FFmpegThreadMode == ThreadMode.MULTI_THREAD || (FFmpegThreadMode == ThreadMode.AUTO && FFmpegFactory.MultiThreadSupported);
-        var config = await FFmpegFactory.CreateDefaultConfig(useThreading);
+        var loadConfig = FFmpegFactory.MultiThreadSupported ? FFmpegFactory.CreateLoadCoreMTConfig() : FFmpegFactory.CreateLoadCoreConfig();
         try
         {
-            await FFmpeg.Load(config);
+            await FFmpeg.Load(loadConfig);
             loaded = true;
             LogMessage = "FFmpeg loaded: " + (useThreading ? "multithread" : "single thread");
         }

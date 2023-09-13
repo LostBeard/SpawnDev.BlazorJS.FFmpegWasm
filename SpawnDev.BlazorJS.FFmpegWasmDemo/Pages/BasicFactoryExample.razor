@@ -9,8 +9,11 @@
 <br />
 <button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
 <br />
-<button @onclick=Transcode disabled="@(!loaded || busy)" id="transcode-button">Transcode webm to mp4</button>
+<button @onclick=FilePicker disabled="@(!loaded || busy)" id="transcode-button">Select input</button>
 <br />
+<button @onclick=Transcode disabled="@(!loaded || busy || string.IsNullOrEmpty(inputFile))" id="transcode-button">Transcode webm to mp4</button>
+<br />
+<p>Input: @inputFile</p>
 <p>@logMessage</p>
 <p>@progressMessage</p>
 <p>Open Developer Tools (Ctrl+Shift+I) to View Logs</p>
@@ -31,20 +34,19 @@
 
     FFmpeg? ffmpeg = null;
 
+    string inputFile = "";
+
     async Task Load()
     {
         busy = true;
         StateHasChanged();
         videoEl = new HTMLVideoElement(videoResult);
-        // FFmpegFactory handles importing umd version of FFmpegWasm and patching ffmpeg.js
         await FFmpegFactory.Init();
         ffmpeg = new FFmpeg();
         ffmpeg.OnLog += FFmpeg_OnLog;
         ffmpeg.OnProgress += FFmpeg_OnProgress;
-        // FFmpegFactory.CreateDefaultConfig creates a config by loading ffmpeg/core or ffmpeg/core-mt (if allowMultiThreading && SharedArrayBuffer is available) from unpkg.com
-        // latest version (at time of SpawnDev.BlazorJS.FFmpegWasm build) are used but other versions can be set
-        var defaultConfig = await FFmpegFactory.CreateDefaultConfig(allowMultiThreading: true);
-        await ffmpeg.Load(defaultConfig);
+        var loadConfig = FFmpegFactory.MultiThreadSupported ? FFmpegFactory.CreateLoadCoreMTConfig() : FFmpegFactory.CreateLoadCoreConfig();
+        await ffmpeg.Load(loadConfig);
         busy = false;
         loaded = true;
         StateHasChanged();
@@ -53,19 +55,80 @@
     async Task Transcode()
     {
         busy = true;
-        StateHasChanged();
-        logMessage = "Downloading source video";
-        StateHasChanged();
-        await ffmpeg.WriteFile("input.webm", await FFmpegFactory.FetchFile("https://raw.githubusercontent.com/ffmpegwasm/testdata/master/Big_Buck_Bunny_180_10s.webm"));
         logMessage = "Transcoding source video";
         StateHasChanged();
-        var ret = await ffmpeg.Exec(new string[] { "-i", "input.webm", "output.mp4" });
+        var ret = await ffmpeg.Exec(new string[] { "-i", inputFile, "output.mp4" });
         logMessage = "Source video transcoded";
         StateHasChanged();
         using var data = await ffmpeg.ReadFileUint8Array("output.mp4");
         using var blob = new Blob(new Uint8Array[] { data }, new BlobOptions { Type = "video/mp4" });
         var objSrc = URL.CreateObjectURL(blob);
         videoEl.Src = objSrc;
+        busy = false;
+        StateHasChanged();
+    }
+
+    bool WorkerFSMounted = false;
+
+    async Task FilePicker()
+    {
+        busy = true;
+        logMessage = "Picking file";
+        StateHasChanged();
+        using var window = JS.Get<Window>("window");
+        Array<FileSystemFileHandle>? fileSystemFileHandles = null;
+        try
+        {
+            fileSystemFileHandles = await window.ShowOpenFilePicker(new ShowOpenFilePickerOptions
+                {
+                    ExcludeAcceptAllOption = true,
+                    Multiple = false,
+                    Types = new List<ShowOpenFilePickerType>
+                {
+                     new ShowOpenFilePickerType
+                     {
+                            Description = "Videos",
+                            Accept = new Dictionary<string, List<string>>{
+                                { "video/*", new List<string> { ".mp4", ".m4v", ".webm", ".avi", ".mkv", ".mov", ".wmv" } }
+                            }
+                     }
+                }
+                });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ShowOpenFilePicker failed or cancelled: {ex.Message}");
+            return;
+        }
+        using var fileSystemHandle = fileSystemFileHandles[0];
+        fileSystemFileHandles.Dispose();
+        using var file = await fileSystemHandle.GetFile();
+        var inputDir = "/input";
+        var inputFile = $"/input/{file.Name}";
+        var parentEntries = await ffmpeg.ListDir("/");
+        var mountDirExists = parentEntries.Where(o => o.IsDir && o.Name == "input").Any();
+        if (!mountDirExists)
+        {
+            await ffmpeg.CreateDir(inputDir);
+        }
+        if (WorkerFSMounted)
+        {
+            await ffmpeg.Unmount(inputDir);
+        }
+        try
+        {
+            var succ = await ffmpeg.MountWorkerFS(inputDir, new FSMountWorkerFSOptions
+                {
+                    Files = new File[] { file },
+                });
+            Console.WriteLine($"MountWorkerFS succ: {succ}");
+            WorkerFSMounted = succ;
+        }
+        catch
+        {
+            Console.WriteLine("MountWorkerFS failed");
+        }
+        this.inputFile = inputFile;
         busy = false;
         StateHasChanged();
     }

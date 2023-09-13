@@ -4,11 +4,11 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>1.1.0</Version>
+		<Version>1.2.0</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>SpawnDev.BlazorJS.FFmpegWasm</Title>
 		<Authors>LostBeard</Authors>
-		<Description>SpawnDev.BlazorJS.FFmpegWasm is a Blazor WASM wrapper around ffmpeg.wasm</Description>
+		<Description>SpawnDev.BlazorJS.FFmpegWasm is a Blazor WASM wrapper around ffmpeg.wasm and contains only the base ffmpeg.js and 814.ffmpeg.js files.</Description>
 		<PackageProjectUrl>https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -30,8 +30,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0-preview.6.23329.11" />
-		<PackageReference Include="SpawnDev.BlazorJS" Version="2.2.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0-rc.1.23421.29" />
+		<PackageReference Include="SpawnDev.BlazorJS" Version="2.2.7" />
 	</ItemGroup>
 
 </Project>

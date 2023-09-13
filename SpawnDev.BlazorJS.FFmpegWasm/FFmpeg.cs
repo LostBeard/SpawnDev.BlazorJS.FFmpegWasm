@@ -1,15 +1,12 @@
 ﻿using Microsoft.JSInterop;
 using SpawnDev.BlazorJS.JSObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpawnDev.BlazorJS.FFmpegWasm
 {
     public class FFmpeg : JSObject
     {
+        public bool Loaded() => JSRef.Get<bool>("loaded");
+
         public FFmpeg(IJSInProcessObjectReference _ref) : base(_ref) { }
         /// <summary>
         /// Constructs a new FFmpeg instance (umd version)
@@ -83,6 +80,28 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         public Task<bool> WriteFile(string path, string data) => JSRef.CallAsync<bool>("writeFile", path, data);
         public Task<bool> WriteFile(string path, Uint8Array data) => JSRef.CallAsync<bool>("writeFile", path, data);
         public Task<bool> WriteFile(string path, byte[] data) => JSRef.CallAsync<bool>("writeFile", path, data);
+
+        /// <summary>
+        /// Allows mounting of WORKERFS in supported builds of ffmpeg.wasm
+        /// </summary>
+        /// <param name="fsType"></param>
+        /// <param name="options"></param>
+        /// <param name="mountPoint"></param>
+        /// <returns></returns>
+        public Task<bool> Mount(string fsType, FSMountOptions options, string mountPoint) => JSRef.CallAsync<bool>("mount", fsType, options, mountPoint);
+        /// <summary>
+        /// Use to unmount a mounted filesystem
+        /// </summary>
+        /// <param name="mountPoint"></param>
+        /// <returns></returns>
+        public Task<bool> Unmount(string mountPoint) => JSRef.CallAsync<bool>("unmount", mountPoint);
+        /// <summary>
+        /// Convenience function to mount WORKERFS in supported builds of ffmpeg.wasm
+        /// </summary>
+        /// <param name="mountPoint"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public Task<bool> MountWorkerFS(string mountPoint, FSMountWorkerFSOptions options) => JSRef.CallAsync<bool>("mount", "WORKERFS", options, mountPoint);
         #endregion
     }
 }
