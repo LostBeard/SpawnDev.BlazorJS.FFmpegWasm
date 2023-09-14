@@ -2,23 +2,55 @@
 @using System.Text
 @using SpawnDev.BlazorJS
 @using SpawnDev.BlazorJS.FFmpegWasm
+@implements IDisposable
 
-<h3>Basic FFmpegFactory Example of ffmpeg.wasm in Blazor</h3>
-<p>A bare bones example of ffmpeg.wasm in Blazor using SpawnDev.BlazorJS and SpawnDev.BlazorJS.FFmpegWASM</p>
-<p>This example uses a slightly customized version of ffmpeg.wasm that is bundled with the referenced Nuget packages. SpawnDev.BlazorJS.FFmpegWasm.Core is used if multithreading is not supported and SpawnDev.BlazorJS.FFmpegWasm.CoreMT is used if it is.</p>
+<h3>Basic Demo of ffmpeg.wasm in Blazor</h3>
+<p>A simple example of ffmpeg.wasm in Blazor WASM using SpawnDev.BlazorJS.FFmpegWASM packages</p>
+<p><a href="https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicFactoryExample.razor">Page source code</a></p>
 <video @ref=videoResult autoplay muted id="video-result" controls></video>
+<br />
+Multithreading supported: @FFmpegFactory.MultiThreadSupported
 <br />
 <button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
 <br />
-<button @onclick=FilePicker disabled="@(!loaded || busy)" id="transcode-button">Select input</button>
 <br />
-<button @onclick=Transcode disabled="@(!loaded || busy || string.IsNullOrEmpty(inputFile))" id="transcode-button">Transcode webm to mp4</button>
+Select file to test transcoding to mp4.
 <br />
-<p>Input: @inputFile</p>
+<input @ref=fileInputRef type="file" disabled="@(!loaded || busy)" style="width: 100%;" />
+<br />
+Multithreading will be used: @FFmpegFactory.MultiThreadSupported
+<br />
+<br />
 <p>@logMessage</p>
 <p>@progressMessage</p>
 <p>Open Developer Tools (Ctrl+Shift+I) to View Logs</p>
 
+<table>
+    <thead>
+        <tr>
+            <th>Package</th>
+            <th>Description</th>
+            <th>Includes</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>SpawnDev.BlazorJS.FFmpegWasm</strong> <br> <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm" rel="nofollow"><img src="https://camo.githubusercontent.com/912d8f52e6e91dcb14e1ec293cc99ad9b7fa6599b3a9f85ae60a1980594468ea/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.svg" style="max-width: 100%;"></a></td>
+            <td>ffmpeg.wasm for Blazor WASM</td>
+            <td>ffmpeg/*<br>ffmpeg.js<br>814.ffmpeg.js</td>
+        </tr>
+        <tr>
+            <td><strong>SpawnDev.BlazorJS.FFmpegWasm.Core</strong> <br> <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core" rel="nofollow"><img src="https://camo.githubusercontent.com/3d5a593e7aef769123997cc9860cdce8a50026d5abada5f1b21b87a8555683ca/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e436f72652e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.Core.svg" style="max-width: 100%;"></a></td>
+            <td>Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core resources</td>
+            <td>core/*<br>ffmpeg-core.js<br>ffmpeg-core.wasm</td>
+        </tr>
+        <tr>
+            <td><strong>SpawnDev.BlazorJS.FFmpegWasm.CoreMT</strong> <br> <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT" rel="nofollow"><img src="https://camo.githubusercontent.com/9c5195371a9d889c7f874899e68ea2e9a45dea972bead8b97702f57d53b514fa/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e436f72654d542e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg" style="max-width: 100%;"></a></td>
+            <td>Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core-mt resources</td>
+            <td>core-mt/*<br>ffmpeg-core.js<br>ffmpeg-core.wasm<br>ffmpeg-core.worker.js</td>
+        </tr>
+    </tbody>
+</table>
 @code {
     [Inject]
     BlazorJSRuntime JS { get; set; }
@@ -32,16 +64,52 @@
     bool busy = false;
     string logMessage = "";
     string progressMessage = "";
-
     FFmpeg? ffmpeg = null;
+    ElementReference fileInputRef;
+    HTMLInputElement? fileInput;
+    bool beenInit = false;
 
-    string inputFile = "";
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!beenInit)
+        {
+            beenInit = true;
+            videoEl = new HTMLVideoElement(videoResult);
+            fileInput = new HTMLInputElement(JS.ToJSRef(fileInputRef));
+            fileInput.OnChange += FileInput_OnChange;
+        }
+    }
+
+    public void Dispose()
+    {
+        if (beenInit)
+        {
+            beenInit = false;
+            videoEl.Dispose();
+            fileInput.OnChange -= FileInput_OnChange;
+            fileInput.Dispose();
+        }
+        if (ffmpeg != null)
+        {
+            ffmpeg.Terminate();
+            ffmpeg.Dispose();
+            ffmpeg = null;
+        }
+    }
+
+    void FileInput_OnChange(Event ev)
+    {
+        using var files = fileInput.Files;
+        var file = files != null && files.Length > 0 ? files[0] : null;
+        if (file == null) return;
+        _ = TranscodeLocalFile(file);
+    }
+
 
     async Task Load()
     {
         busy = true;
         StateHasChanged();
-        videoEl = new HTMLVideoElement(videoResult);
         await FFmpegFactory.Init();
         ffmpeg = new FFmpeg();
         ffmpeg.OnLog += FFmpeg_OnLog;
@@ -50,10 +118,10 @@
         // SpawnDev.BlazorJS.FFmpegWasm.Core
         // SpawnDev.BlazorJS.FFmpegWasm.CoreMT
         //
-        // From SpawnDev.BlazorJS.FFmpegWasm.Core 
+        // From SpawnDev.BlazorJS.FFmpegWasm.Core
         // - Contains the ffmpeg.wasm core for single thread files
         // - Adds CreateLoadCoreConfig to FFmpegFactory
-        // From SpawnDev.BlazorJS.FFmpegWasm.CoreMT 
+        // From SpawnDev.BlazorJS.FFmpegWasm.CoreMT
         // - Contains the ffmpeg.wasm core for multi thread files
         // - Adds CreateLoadCoreMTConfig to FFmpegFactory
         // Single thread and multi thread versions acn be used independently of each other to lower resource packaging.
@@ -64,83 +132,26 @@
         StateHasChanged();
     }
 
-    async Task Transcode()
+    async Task TranscodeLocalFile(File file)
     {
         busy = true;
+        StateHasChanged();
+        var inputDir = "/input";
+        var inputFile = $"/input/{file.Name}";
+        await ffmpeg.CreateDir(inputDir);
+        await ffmpeg.MountWorkerFS(inputDir, new FSMountWorkerFSOptions { Files = new[] { file } });
+        var ls = await ffmpeg.ListDir(inputDir);
         logMessage = "Transcoding source video";
         StateHasChanged();
         var ret = await ffmpeg.Exec(new string[] { "-i", inputFile, "output.mp4" });
         logMessage = "Source video transcoded";
         StateHasChanged();
+        await ffmpeg.Unmount(inputDir);
+        await ffmpeg.DeleteDir(inputDir);
         using var data = await ffmpeg.ReadFileUint8Array("output.mp4");
         using var blob = new Blob(new Uint8Array[] { data }, new BlobOptions { Type = "video/mp4" });
         var objSrc = URL.CreateObjectURL(blob);
         videoEl.Src = objSrc;
-        busy = false;
-        StateHasChanged();
-    }
-
-    bool WorkerFSMounted = false;
-
-    async Task FilePicker()
-    {
-        busy = true;
-        logMessage = "Picking file";
-        StateHasChanged();
-        using var window = JS.Get<Window>("window");
-        Array<FileSystemFileHandle>? fileSystemFileHandles = null;
-        try
-        {
-            fileSystemFileHandles = await window.ShowOpenFilePicker(new ShowOpenFilePickerOptions
-                {
-                    ExcludeAcceptAllOption = true,
-                    Multiple = false,
-                    Types = new List<ShowOpenFilePickerType>
-                {
-                     new ShowOpenFilePickerType
-                     {
-                            Description = "Videos",
-                            Accept = new Dictionary<string, List<string>>{
-                                { "video/*", new List<string> { ".mp4", ".m4v", ".webm", ".avi", ".mkv", ".mov", ".wmv" } }
-                            }
-                     }
-                }
-                });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"ShowOpenFilePicker failed or cancelled: {ex.Message}");
-            return;
-        }
-        using var fileSystemHandle = fileSystemFileHandles[0];
-        fileSystemFileHandles.Dispose();
-        using var file = await fileSystemHandle.GetFile();
-        var inputDir = "/input";
-        var inputFile = $"/input/{file.Name}";
-        var parentEntries = await ffmpeg.ListDir("/");
-        var mountDirExists = parentEntries.Where(o => o.IsDir && o.Name == "input").Any();
-        if (!mountDirExists)
-        {
-            await ffmpeg.CreateDir(inputDir);
-        }
-        if (WorkerFSMounted)
-        {
-            await ffmpeg.Unmount(inputDir);
-        }
-        try
-        {
-            var succ = await ffmpeg.MountWorkerFS(inputDir, new FSMountWorkerFSOptions
-                {
-                    Files = new File[] { file },
-                });
-            Console.WriteLine($"MountWorkerFS succ: {succ}");
-            WorkerFSMounted = succ;
-        }
-        catch
-        {
-            Console.WriteLine("MountWorkerFS failed");
-        }
-        this.inputFile = inputFile;
         busy = false;
         StateHasChanged();
     }

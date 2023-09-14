@@ -4,8 +4,9 @@
 @using SpawnDev.BlazorJS.FFmpegWasm
 
 <h3>Basic Example of ffmpeg.wasm in Blazor</h3>
-<p>A bare bones example of ffmpeg.wasm in Blazor using SpawnDev.BlazorJS and SpawnDev.BlazorJS.FFmpegWASM</p>
-<p>This example uses ffmpeg.wasm directly from unpkg.com CDN and transcodes a webm video file that is also remotely hosted. Only Nuget SpawnDev.BlazorJS.FFmpegWasm is needed.</p>
+<p>A simple demo of using the official ffmpeg.wasm in Blazor using SpawnDev.BlazorJS.FFmpegWASM</p>
+<p>This example uses ffmpeg.wasm directly from unpkg.com CDN and transcodes a webm video file that is also remotely hosted.<br />
+    Only Nuget SpawnDev.BlazorJS.FFmpegWasm is needed.</p>
 <video @ref=videoResult autoplay muted id="video-result" controls></video>
 <br />
 <button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
