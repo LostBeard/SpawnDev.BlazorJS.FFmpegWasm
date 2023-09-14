@@ -9,18 +9,28 @@
 <p><a href="https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicFactoryExample.razor">Page source code</a></p>
 <video @ref=videoResult autoplay muted id="video-result" controls style="border: 1px solid black;"></video>
 <br />
-Multithreading supported: @FFmpegFactory.MultiThreadSupported
-<br />
-<button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
-<br />
-<br />
-Select file to test transcoding to mp4.
-<br />
-<input @ref=fileInputRef type="file" disabled="@(!loaded || busy)" style="width: 100%;" />
-<br />
-Multithreading will be used: @FFmpegFactory.MultiThreadSupported
-<br />
-<br />
+<div style="@(loaded ? "display: none;" : "")">
+    <button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
+    <br />
+    <br />
+</div>
+<div style="@(!loaded ? "display: none;" : "")">
+    Select file to test transcoding to mp4.
+    <br />
+    <input @ref=fileInputRef type="file" disabled="@(!loaded || busy)" style="width: 100%;" />
+    <br />
+    Multithreading will be used: @FFmpegFactory.MultiThreadSupported
+    <br />
+    <br />
+    <div style="width: 100%; background-color: grey; position: relative;">
+        <div style="width: @(percentComplete)%; background-color: cadetblue; height: 36px;">
+
+        </div>
+        <div style="padding-top: 0; top: 0; left: 0; position: absolute; height: 100%; width: 100%; background-color: transparent; font-weight: bold; text-align: center; font-size: 24px;">
+            @(Math.Round(percentComplete, 3)) %
+        </div>
+    </div>
+</div>
 <p>@logMessage</p>
 <p>@progressMessage</p>
 <p>Open Developer Tools (Ctrl+Shift+I) to View Logs</p>
@@ -68,6 +78,7 @@ Multithreading will be used: @FFmpegFactory.MultiThreadSupported
     ElementReference fileInputRef;
     HTMLInputElement? fileInput;
     bool beenInit = false;
+    double percentComplete = 0; 
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -169,6 +180,7 @@ Multithreading will be used: @FFmpegFactory.MultiThreadSupported
         var time = ev.Time;
         progressMessage = $"{progress * 100} % (transcoded time: {time / 1000000} s)";
         JS.Log("FFmpeg_OnProgress", ev.Time, ev.Progress);
+        percentComplete = ev.Progress * 100d;
         StateHasChanged();
     }
 }
