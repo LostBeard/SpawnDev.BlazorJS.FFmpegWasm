@@ -5,7 +5,7 @@
 <div>
     <h3>@title</h3>
     <div style="@(loaded ? "" : "display: none;")">
-        <video @ref=videoRef controls autoplay muted></video>
+        <video @ref=videoRef controls autoplay muted style="border: 1px solid black;"></video>
         <br />
         <button @onclick=Transcode>Transcode webm to mp4</button>
         <p>Open Developer Tools (Ctrl+Shift+I) to View Logs</p>
