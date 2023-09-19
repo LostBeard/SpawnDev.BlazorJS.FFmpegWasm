@@ -1,0 +1,38 @@
+﻿@page "/VideoToGif"
+
+<h3>Video To Gif</h3>
+<p>This demo uses ffmpeg.wasm to create a gif from a video input.</p>
+<p>
+    <a href="https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/VideoToGif.razor">VideoToGif.razor</a><br />
+    <a href="https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/VideoToGif.razor.cs">VideoToGif.razor.cs</a><br />
+    At the moment this demo starts 5 seconds into the video and creates a 5 second gif.
+</p>
+<img src="@outputURL" style="min-width: 100px; min-height: 100px; border: 1px solid black;"><br />
+<a style="@(string.IsNullOrEmpty(outputFileName) ? "display: none;" : "")" href="@outputURL" download="@outputFileName">@outputFileName</a>
+<br />
+
+<br />
+<div style="@(loaded ? "display: none;" : "")">
+    <button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
+    <br />
+    <br />
+</div>
+<div style="@(!loaded ? "display: none;" : "")">
+    Select a source video.
+    <br />
+    <input @ref=fileInputRef accept="video/*" type="file" disabled="@(!loaded || busy)" style="width: 100%;" />
+    <br />
+    Multithreading will be used: @FFmpegFactory.MultiThreadSupported
+    <br />
+    <br />
+    <div style="width: 100%; background-color: grey; position: relative;">
+        <div style="width: @(percentComplete)%; background-color: cadetblue; height: 36px;">
+        </div>
+        <div style="padding-top: 0; top: 0; left: 0; position: absolute; height: 100%; width: 100%; background-color: transparent; font-weight: bold; text-align: center; font-size: 24px;">
+            @(Math.Round(percentComplete, 3)) %
+        </div>
+    </div>
+</div>
+<p>@logMessage</p>
+<p>@progressMessage</p>
+<p>Open Developer Tools (Ctrl+Shift+I) to View Logs</p>

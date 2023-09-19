@@ -17,7 +17,7 @@
 <div style="@(!loaded ? "display: none;" : "")">
     Select file to test transcoding to mp4.
     <br />
-    <input @ref=fileInputRef type="file" disabled="@(!loaded || busy)" style="width: 100%;" />
+    <input @ref=fileInputRef accept="video/*" type="file" disabled="@(!loaded || busy)" style="width: 100%;" />
     <br />
     Multithreading will be used: @FFmpegFactory.MultiThreadSupported
     <br />
