@@ -19,4 +19,8 @@
 		<ProjectReference Include="..\SpawnDev.BlazorJS.FFmpegWasm\SpawnDev.BlazorJS.FFmpegWasm.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\fonts\" />
+	</ItemGroup>
+
 </Project>

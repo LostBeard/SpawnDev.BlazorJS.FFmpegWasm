@@ -88,6 +88,11 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
             return ret;
         }
 
+        public async Task<Uint8Array> FetchFile(Blob resource)
+        {
+            using var body = await resource.ArrayBuffer();
+            return new Uint8Array(body);
+        }
         public async Task<Uint8Array> FetchFile(string resource)
         {
             using var resp = await JS.Fetch(resource);
