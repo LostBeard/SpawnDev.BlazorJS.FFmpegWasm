@@ -113,7 +113,7 @@ namespace SpawnDev.BlazorJS.FFmpegWasmDemo.Pages
         {
             busy = true;
             StateHasChanged();
-            // load input videoFile
+            // load input videoFile and srtFile
             var inputDir = "/input";
             await ffmpeg.CreateDir(inputDir);
             await ffmpeg.MountWorkerFS(inputDir, new FSMountWorkerFSOptions { Files = new[] { videoFile, srtFile } });
