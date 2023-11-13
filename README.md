@@ -13,7 +13,7 @@
  
 [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) is a pure Webassembly / Javascript port of FFmpeg. It enables video & audio record, convert and stream right inside browsers.
 
-SpawnDev.BlazorJS.FFmpegWasm uses [SpawnDev.BlazorJS](https://github.com/LostBeard/SpawnDev.BlazorJS) [JSObjects](https://github.com/LostBeard/SpawnDev.BlazorJS#jsobject-base-class) to bring [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) into Blazor WASM apps. A slightly customized version of ffmpeg.wasm ([repo here](https://github.com/LostBeard/ffmpeg.wasm)) is used to add additional functionality to the base version. Additions like WORKERFS support which allows directly reading input files from the native filesystem in supported browsers and also adds support for files larger than 4 Gb.
+SpawnDev.BlazorJS.FFmpegWasm uses [SpawnDev.BlazorJS](https://github.com/LostBeard/SpawnDev.BlazorJS) [JSObjects](https://github.com/LostBeard/SpawnDev.BlazorJS#jsobject-base-class) to bring [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) into Blazor WASM apps. A slightly customized version of ffmpeg.wasm ([repo here](https://github.com/LostBeard/ffmpeg.wasm)) is used to add additional functionality to the base version.
 
 [Live Demo](https://lostbeard.github.io/SpawnDev.BlazorJS.FFmpegWasm/)
 
