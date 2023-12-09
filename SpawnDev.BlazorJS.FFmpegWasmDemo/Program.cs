@@ -21,6 +21,22 @@ namespace SpawnDev.BlazorJS.FFmpegWasmDemo
             var host = builder.Build();
             var JS = BlazorJSRuntime.JS;
             JS.Log(nameof(JS.CrossOriginIsolated), JS.CrossOriginIsolated);
+
+
+            //var ffprobe = new FFProbe(JS);
+            //try
+            //{
+            //    JS.Log("FetchFile");
+            //    var file = await ffprobe.FetchFile("https://video-examples-public.s3.us-west-2.amazonaws.com/tears-of-steel-360p.mp4");
+            //    JS.Log("GetFileInfo");
+            //    var info = await ffprobe.GetMediaInfo(file);
+            //    JS.Log("info", info);
+            //}
+            //catch (Exception ex)
+            //{
+            //    JS.Log("error", ex.Message);
+            //}
+
             //using var http = new HttpClient();
             //try
             //{

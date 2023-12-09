@@ -11,7 +11,7 @@
 |**SpawnDev.BlazorJS.FFmpegWasm.Core** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.Core.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core)| Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core resources | core/*<br />ffmpeg-core.js<br />ffmpeg-core.wasm
 |**SpawnDev.BlazorJS.FFmpegWasm.CoreMT** <br /> [![NuGet version](https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg)](https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT)| Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core-mt resources | core-mt/*<br />ffmpeg-core.js<br />ffmpeg-core.wasm<br />ffmpeg-core.worker.js
  
-[ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) is a pure Webassembly / Javascript port of FFmpeg. It enables video & audio record, convert and stream right inside browsers.
+[ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) is a pure WebAssembly / Javascript port of FFmpeg. It enables video & audio record, convert and stream right inside browsers.
 
 SpawnDev.BlazorJS.FFmpegWasm uses [SpawnDev.BlazorJS](https://github.com/LostBeard/SpawnDev.BlazorJS) [JSObjects](https://github.com/LostBeard/SpawnDev.BlazorJS#jsobject-base-class) to bring [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) into Blazor WASM apps. A slightly customized version of ffmpeg.wasm ([repo here](https://github.com/LostBeard/ffmpeg.wasm)) is used to add additional functionality to the base version.
 
