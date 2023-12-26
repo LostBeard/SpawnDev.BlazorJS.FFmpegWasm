@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>1.2.1</Version>
+		<Version>1.2.2</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>SpawnDev.BlazorJS.FFmpegWasm</Title>
 		<Authors>LostBeard</Authors>
@@ -31,10 +31,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\..\..\SpawnDev\SpawnDev\SpawnDev.BlazorJS.BabylonJS\SpawnDev.BlazorJS.BabylonJS.csproj" />
+		<PackageReference Include="SpawnDev.BlazorJS" Version="2.2.47" />
 	</ItemGroup>
 
 </Project>
