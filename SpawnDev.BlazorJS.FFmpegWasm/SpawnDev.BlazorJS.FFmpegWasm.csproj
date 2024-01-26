@@ -30,8 +30,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
-		<PackageReference Include="SpawnDev.BlazorJS" Version="2.2.47" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.1" />
+		<PackageReference Include="SpawnDev.BlazorJS" Version="2.2.48" />
 	</ItemGroup>
 
 </Project>
