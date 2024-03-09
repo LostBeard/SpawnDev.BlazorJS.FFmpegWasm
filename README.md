@@ -16,6 +16,9 @@
 SpawnDev.BlazorJS.FFmpegWasm uses [SpawnDev.BlazorJS](https://github.com/LostBeard/SpawnDev.BlazorJS) [JSObjects](https://github.com/LostBeard/SpawnDev.BlazorJS#jsobject-base-class) to bring [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) into Blazor WASM apps. A slightly customized version of ffmpeg.wasm ([repo here](https://github.com/LostBeard/ffmpeg.wasm)) is used to add additional functionality to the base version.
 
 [Live Demo](https://lostbeard.github.io/SpawnDev.BlazorJS.FFmpegWasm/)
+- [Transcode](https://lostbeard.github.io/SpawnDev.BlazorJS.FFmpegWasm/)
+- [Video to Gif](https://lostbeard.github.io/SpawnDev.BlazorJS.FFmpegWasm/VideoToGif)
+- [Add subtitles](https://lostbeard.github.io/SpawnDev.BlazorJS.FFmpegWasm/AddSubtitles)
 
 ## FFmpegFactory
 FFmpegFactory is an optional service that can handle importing FFmpegWasm and includes helper methods like ToBlobURL, FetchFile, and CreateDefaultConfig.
