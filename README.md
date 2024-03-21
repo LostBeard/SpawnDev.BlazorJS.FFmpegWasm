@@ -21,7 +21,7 @@ SpawnDev.BlazorJS.FFmpegWasm uses [SpawnDev.BlazorJS](https://github.com/LostBea
 - [Add subtitles](https://lostbeard.github.io/SpawnDev.BlazorJS.FFmpegWasm/AddSubtitles)
 
 ## FFmpegFactory
-FFmpegFactory is an optional service that can handle importing FFmpegWasm and includes helper methods like ToBlobURL, FetchFile, and CreateDefaultConfig.
+FFmpegFactory is an optional service that can handle importing FFmpegWasm and includes helper methods like ToBlobURL, FetchFile, CreateLoadCoreConfig, and CreateLoadCoreMTConfig.
 
 #### With FFmpegFactory
 Source [BasicFactoryExample.razor](https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicFactoryExample.razor) 
