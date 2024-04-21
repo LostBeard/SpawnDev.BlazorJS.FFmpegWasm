@@ -4,29 +4,27 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>1.2.4</Version>
+		<Version>1.2.5</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<EmbedAllSources>true</EmbedAllSources>
+		<DebugType>Embedded</DebugType>
 		<Title>SpawnDev.BlazorJS.FFmpegWasm.CoreMT</Title>
 		<Authors>LostBeard</Authors>
 		<Description>SpawnDev.BlazorJS.FFmpegWasm.CoreMT is a Blazor WASM wrapper around ffmpeg.wasm and contains the multi threaded core-mt.</Description>
 		<PackageProjectUrl>https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageIcon>icon-128.png</PackageIcon>
 		<RepositoryUrl>https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Blazor;BlazorWebAssembly;DotNet;FFmpegWasm;FFmpeg</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<SupportedPlatform Include="browser" />
+		<None Include="Assets\icon-128.png" Pack="true" PackagePath="\" />
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -35,6 +33,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\SpawnDev.BlazorJS.FFmpegWasm\SpawnDev.BlazorJS.FFmpegWasm.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 
 </Project>
