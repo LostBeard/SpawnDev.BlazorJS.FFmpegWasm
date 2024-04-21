@@ -4,34 +4,36 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>1.2.3</Version>
+		<Version>1.2.4</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<EmbedAllSources>true</EmbedAllSources>
+		<DebugType>Embedded</DebugType>
 		<Title>SpawnDev.BlazorJS.FFmpegWasm</Title>
 		<Authors>LostBeard</Authors>
 		<Description>SpawnDev.BlazorJS.FFmpegWasm is a Blazor WASM wrapper around ffmpeg.wasm and contains only the base ffmpeg.js and 814.ffmpeg.js files.</Description>
 		<PackageProjectUrl>https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageIcon>icon-128.png</PackageIcon>
 		<RepositoryUrl>https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>Blazor;BlazorWebAssembly;DotNet;FFmpegWasm;FFmpeg</PackageTags>
+		<PackageTags>Blazor;BlazorWebAssembly;FFmpegWasm;FFmpeg</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<SupportedPlatform Include="browser" />
+		<None Include="Assets\icon-128.png" Pack="true" PackagePath="\" />
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.1" />
-		<PackageReference Include="SpawnDev.BlazorJS" Version="2.2.63" />
+		<PackageReference Include="SpawnDev.BlazorJS" Version="2.2.85" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 
 </Project>

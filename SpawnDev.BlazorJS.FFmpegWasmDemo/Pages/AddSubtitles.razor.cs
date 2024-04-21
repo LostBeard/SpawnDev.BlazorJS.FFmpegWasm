@@ -69,14 +69,14 @@ namespace SpawnDev.BlazorJS.FFmpegWasmDemo.Pages
 
         void FileInput_OnChange(Event ev)
         {
-            using var files = fileInput.Files;
-            inputFileObj = files != null && files.Length > 0 ? files[0] : null;
+            using var files = fileInput!.Files;
+            inputFileObj = files?.FirstOrDefault();
             StateHasChanged();
         }
         void SrtInput_OnChange(Event ev)
         {
-            using var files = srtInput.Files;
-            srtFileObj = files != null && files.Length > 0 ? files[0] : null;
+            using var files = srtInput!.Files;
+            srtFileObj = files?.FirstOrDefault();
             StateHasChanged();
         }
 

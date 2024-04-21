@@ -5,8 +5,10 @@
 
 <h3>Basic Example of ffmpeg.wasm in Blazor</h3>
 <p>A simple demo of using the official ffmpeg.wasm in Blazor using SpawnDev.BlazorJS.FFmpegWASM</p>
-<p>This example uses ffmpeg.wasm directly from unpkg.com CDN and transcodes a webm video file that is also remotely hosted.<br />
-    Only Nuget SpawnDev.BlazorJS.FFmpegWasm is needed.</p>
+<p>
+    This example uses ffmpeg.wasm directly from unpkg.com CDN and transcodes a webm video file that is also remotely hosted.<br />
+    Only Nuget SpawnDev.BlazorJS.FFmpegWasm is needed.
+</p>
 <video @ref=videoResult autoplay muted id="video-result" controls style="border: 1px solid black;"></video>
 <br />
 <button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
@@ -27,8 +29,23 @@
     bool busy = false;
     string logMessage = "";
     string progressMessage = "";
-    string baseURLFFmpeg = "https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/umd";
-    string baseURLCore = "https://unpkg.com/@ffmpeg/core@0.12.3/dist/umd";
+    // Unpkg urls for FFmpegWasm dist files
+    // Current versions as of 2024-04-21
+    // ffmpeg
+    // https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js
+    // https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/814.ffmpeg.js
+    // core
+    // https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js
+    // https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm
+    // core-mt
+    // https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/umd/ffmpeg-core.js
+    // https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/umd/ffmpeg-core.wasm
+    // https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/umd/ffmpeg-core.worker.js
+    static string Version = "0.12.10";
+    static string CoreVersion = "0.12.6";
+    string baseURLFFmpeg = $"https://unpkg.com/@ffmpeg/ffmpeg@{Version}/dist/umd";
+    string baseURLCore = $"https://unpkg.com/@ffmpeg/core@{CoreVersion}/dist/umd";
+    string baseURLCoreMT = $"https://unpkg.com/@ffmpeg/core-mt@{CoreVersion}/dist/umd";
 
     FFmpeg? ffmpeg = null;
 
@@ -42,8 +59,21 @@
             // a quick patch to allow us the ability to specify the full path to the primary ffmpeg worker (814.ffmpeg.js in umd version) via our FFMessageLoadConfig
             // the ffmpeg.js script tries to build the path location itself (with the code being replaced) but will fail (in our scenario) so we patch it to allow us to specify the path
             // essentially the same as Pull request #562 (https://github.com/ffmpegwasm/ffmpeg.wasm/pull/562) except this works on the minified UMD version
-            // only needed for the current official build until the next build with pull #562
-            var FFmpegObjUrl = await ToBlobURL($"{baseURLFFmpeg}/ffmpeg.js", "application/javascript", (js) => js.Replace("new Worker(new URL(e.p+e.u(814),e.b),{type:void 0})", "new Worker(r.worker814URL,{type:void 0})"));
+            // The ffmpeg.js included with SpawnDev.FFmpegWasm is pre-patched
+            var FFmpegObjUrl = await ToBlobURL($"{baseURLFFmpeg}/ffmpeg.js", "application/javascript", (js) =>
+            {
+                var findStr = "new Worker(new URL(e.p+e.u(814),e.b),{type:void 0})";
+                if (js.Contains(findStr))
+                {
+                    js = js.Replace(findStr, "new Worker(r.workerLoadURL,{type:void 0})");
+                    JS.Log("ffmpeg.js patched.");
+                }
+                else
+                {
+                    JS.Log("ffmpeg.js not patched.");
+                }
+                return js;
+            });
             await JS.Import(FFmpegObjUrl);
             URL.RevokeObjectURL(FFmpegObjUrl);
         }
@@ -100,7 +130,7 @@
 
     async Task<Uint8Array> FetchFile(string resource)
     {
-        using var resp = await JS.Fetch(resource);
+        using var resp = await JS.Fetch(resource, new FetchOptions { });
         using var body = await resp.ArrayBuffer();
         return new Uint8Array(body);
     }

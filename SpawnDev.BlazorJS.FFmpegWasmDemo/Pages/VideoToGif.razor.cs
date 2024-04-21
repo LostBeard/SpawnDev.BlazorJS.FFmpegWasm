@@ -52,8 +52,8 @@ namespace SpawnDev.BlazorJS.FFmpegWasmDemo.Pages
 
         void FileInput_OnChange(Event ev)
         {
-            using var files = fileInput.Files;
-            var file = files != null && files.Length > 0 ? files[0] : null;
+            using var files = fileInput!.Files;
+            var file = files?.FirstOrDefault();
             if (file == null) return;
             _ = TranscodeLocalFile(file);
         }
