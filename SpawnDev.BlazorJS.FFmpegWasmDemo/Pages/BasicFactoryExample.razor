@@ -15,16 +15,14 @@
     <br />
 </div>
 <div style="@(!loaded ? "display: none;" : "")">
-    Select file to test transcoding to mp4.
-    <br />
-    <input @ref=fileInputRef accept="video/*" type="file" disabled="@(!loaded || busy)" style="width: 100%;" />
-    <br />
-    Multithreading will be used: @FFmpegFactory.MultiThreadSupported
-    <br />
+    Select file to test transcoding to mp4.<br />
+    <input @ref=fileInputRef accept="video/*" type="file" disabled="@(!loaded || busy)" style="width: 100%;" /><br />
+    <input type="checkbox" @bind="@useWorkerFS" name="useWorkerFS" /><label for="useWorkerFS">Use WorkerFS</label><br />
+    <button @onclick=Transcode disabled="@(!loaded || busy || sourceFile == null)" id="transcode-button">Transcode to mp4</button><br />
+    Multithreading will be used: @FFmpegFactory.MultiThreadSupported<br />
     <br />
     <div style="width: 100%; background-color: grey; position: relative;">
         <div style="width: @(percentComplete)%; background-color: cadetblue; height: 36px;">
-
         </div>
         <div style="padding-top: 0; top: 0; left: 0; position: absolute; height: 100%; width: 100%; background-color: transparent; font-weight: bold; text-align: center; font-size: 24px;">
             @(Math.Round(percentComplete, 3)) %
@@ -45,17 +43,32 @@
     </thead>
     <tbody>
         <tr>
-            <td><strong>SpawnDev.BlazorJS.FFmpegWasm</strong> <br> <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm" rel="nofollow"><img src="https://camo.githubusercontent.com/912d8f52e6e91dcb14e1ec293cc99ad9b7fa6599b3a9f85ae60a1980594468ea/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.svg" style="max-width: 100%;"></a></td>
+            <td>
+                <strong>SpawnDev.BlazorJS.FFmpegWasm</strong> <br>
+                <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm" rel="nofollow">
+                    <img src="https://camo.githubusercontent.com/912d8f52e6e91dcb14e1ec293cc99ad9b7fa6599b3a9f85ae60a1980594468ea/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.svg" style="max-width: 100%;">
+                </a>
+            </td>
             <td>ffmpeg.wasm for Blazor WASM</td>
             <td>ffmpeg/*<br>ffmpeg.js<br>814.ffmpeg.js</td>
         </tr>
         <tr>
-            <td><strong>SpawnDev.BlazorJS.FFmpegWasm.Core</strong> <br> <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core" rel="nofollow"><img src="https://camo.githubusercontent.com/3d5a593e7aef769123997cc9860cdce8a50026d5abada5f1b21b87a8555683ca/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e436f72652e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.Core.svg" style="max-width: 100%;"></a></td>
+            <td>
+                <strong>SpawnDev.BlazorJS.FFmpegWasm.Core</strong> <br>
+                <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core" rel="nofollow">
+                    <img src="https://camo.githubusercontent.com/3d5a593e7aef769123997cc9860cdce8a50026d5abada5f1b21b87a8555683ca/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e436f72652e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.Core.svg" style="max-width: 100%;">
+                </a>
+            </td>
             <td>Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core resources</td>
             <td>core/*<br>ffmpeg-core.js<br>ffmpeg-core.wasm</td>
         </tr>
         <tr>
-            <td><strong>SpawnDev.BlazorJS.FFmpegWasm.CoreMT</strong> <br> <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT" rel="nofollow"><img src="https://camo.githubusercontent.com/9c5195371a9d889c7f874899e68ea2e9a45dea972bead8b97702f57d53b514fa/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e436f72654d542e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg" style="max-width: 100%;"></a></td>
+            <td>
+                <strong>SpawnDev.BlazorJS.FFmpegWasm.CoreMT</strong> <br>
+                <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT" rel="nofollow">
+                    <img src="https://camo.githubusercontent.com/9c5195371a9d889c7f874899e68ea2e9a45dea972bead8b97702f57d53b514fa/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e436f72654d542e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg" style="max-width: 100%;">
+                </a>
+            </td>
             <td>Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core-mt resources</td>
             <td>core-mt/*<br>ffmpeg-core.js<br>ffmpeg-core.wasm<br>ffmpeg-core.worker.js</td>
         </tr>
@@ -78,7 +91,9 @@
     ElementReference fileInputRef;
     HTMLInputElement? fileInput;
     bool beenInit = false;
-    double percentComplete = 0; 
+    double percentComplete = 0;
+    bool useWorkerFS = true;
+    File? sourceFile = null;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -96,8 +111,8 @@
         if (beenInit)
         {
             beenInit = false;
-            videoEl.Dispose();
-            fileInput.OnChange -= FileInput_OnChange;
+            videoEl!.Dispose();
+            fileInput!.OnChange -= FileInput_OnChange;
             fileInput.Dispose();
         }
         if (ffmpeg != null)
@@ -106,14 +121,15 @@
             ffmpeg.Dispose();
             ffmpeg = null;
         }
+        sourceFile?.Dispose();
+        sourceFile = null;
     }
 
     void FileInput_OnChange(Event ev)
     {
         using var files = fileInput!.Files;
-        var file = files?.FirstOrDefault();
-        if (file == null) return;
-        _ = TranscodeLocalFile(file);
+        sourceFile = files?.FirstOrDefault();
+        StateHasChanged();
     }
 
     async Task Load()
@@ -142,15 +158,27 @@
         StateHasChanged();
     }
 
-    async Task TranscodeLocalFile(File file)
+    async Task Transcode()
     {
+        if (sourceFile == null) return;
         busy = true;
         StateHasChanged();
         var inputDir = "/input";
-        var inputFile = $"/input/{file.Name}";
+        var inputFile = $"/input/{sourceFile.Name}";
         await ffmpeg.CreateDir(inputDir);
-        await ffmpeg.MountWorkerFS(inputDir, new FSMountWorkerFSOptions { Files = new[] { file } });
-        var ls = await ffmpeg.ListDir(inputDir);
+        if (useWorkerFS)
+        {
+            // using WORKERFS. the file handle will be shared with the main worker
+            await ffmpeg.MountWorkerFS(inputDir, new FSMountWorkerFSOptions { Files = new[] { sourceFile } });
+        }
+        else
+        {
+            // not using WORKERFS. the entire file will be read into memory and transferred to the main worker
+            using var arrayBuffer = await sourceFile.ArrayBuffer();
+            using var uint8Array = new Uint8Array(arrayBuffer);
+            await ffmpeg.WriteFile(inputFile, uint8Array);
+        }
+        //var ls = await ffmpeg.ListDir(inputDir);
         logMessage = "Transcoding source video";
         StateHasChanged();
         var ret = await ffmpeg.Exec(new string[] { "-i", inputFile, "output.mp4" });
@@ -161,7 +189,7 @@
         using var data = await ffmpeg.ReadFileUint8Array("output.mp4");
         using var blob = new Blob(new Uint8Array[] { data }, new BlobOptions { Type = "video/mp4" });
         var objSrc = URL.CreateObjectURL(blob);
-        videoEl.Src = objSrc;
+        videoEl!.Src = objSrc;
         busy = false;
         StateHasChanged();
     }
