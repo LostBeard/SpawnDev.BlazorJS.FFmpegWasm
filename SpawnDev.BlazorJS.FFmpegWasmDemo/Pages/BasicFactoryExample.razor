@@ -9,15 +9,17 @@
 <p><a href="https://github.com/LostBeard/SpawnDev.BlazorJS.FFmpegWasm/blob/main/SpawnDev.BlazorJS.FFmpegWasmDemo/Pages/BasicFactoryExample.razor">Page source code</a></p>
 <video @ref=videoResult autoplay muted id="video-result" controls style="border: 1px solid black;"></video>
 <br />
-<div style="@(loaded ? "display: none;" : "")">
+<div>
     <button @onclick=Load disabled="@(loaded || busy)" id="load-button">Load ffmpeg-core (~31 MB)</button>
     <br />
     <br />
 </div>
-<div style="@(!loaded ? "display: none;" : "")">
+<div>
     Select file to test transcoding to mp4.<br />
     <input @ref=fileInputRef accept="video/*" type="file" disabled="@(!loaded || busy)" style="width: 100%;" /><br />
-    <input type="checkbox" @bind="@useWorkerFS" name="useWorkerFS" /><label for="useWorkerFS">Use WorkerFS</label><br />
+    <br />
+    <input type="checkbox" @bind="@useWorkerFS" disabled="@(!loaded || busy)" name="useWorkerFS" /><label for="useWorkerFS">Use WorkerFS</label><br />
+    <br />
     <button @onclick=Transcode disabled="@(!loaded || busy || sourceFile == null)" id="transcode-button">Transcode to mp4</button><br />
     Multithreading will be used: @FFmpegFactory.MultiThreadSupported<br />
     <br />
@@ -128,7 +130,7 @@
     void FileInput_OnChange(Event ev)
     {
         using var files = fileInput!.Files;
-        sourceFile = files?.FirstOrDefault();
+        sourceFile = files!.Length > 0 ? files[0] : null;
         StateHasChanged();
     }
 
@@ -184,7 +186,16 @@
         var ret = await ffmpeg.Exec(new string[] { "-i", inputFile, "output.mp4" });
         logMessage = "Source video transcoded";
         StateHasChanged();
-        await ffmpeg.Unmount(inputDir);
+        // empty the input folder
+        if (useWorkerFS)
+        {
+            await ffmpeg.Unmount(inputDir);
+        }
+        else
+        {
+            await ffmpeg.DeleteFile(inputFile);
+        }
+        // delete the input folder
         await ffmpeg.DeleteDir(inputDir);
         using var data = await ffmpeg.ReadFileUint8Array("output.mp4");
         using var blob = new Blob(new Uint8Array[] { data }, new BlobOptions { Type = "video/mp4" });

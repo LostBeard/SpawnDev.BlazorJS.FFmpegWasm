@@ -11,13 +11,20 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all" />
+
+		<PackageReference Include="SpawnDev.BlazorJS" Version="2.2.86" />
+		<PackageReference Include="SpawnDev.BlazorJS.FFmpegWasm" Version="1.2.5" />
+		<PackageReference Include="SpawnDev.BlazorJS.FFmpegWasm.CoreMT" Version="1.2.5" />
+		<PackageReference Include="SpawnDev.BlazorJS.FFmpegWasm.Core" Version="1.2.5" />
 	</ItemGroup>
 
+	<!--
 	<ItemGroup>
 		<ProjectReference Include="..\SpawnDev.BlazorJS.FFmpegWasm.CoreMT\SpawnDev.BlazorJS.FFmpegWasm.CoreMT.csproj" />
 		<ProjectReference Include="..\SpawnDev.BlazorJS.FFmpegWasm.Core\SpawnDev.BlazorJS.FFmpegWasm.Core.csproj" />
 		<ProjectReference Include="..\SpawnDev.BlazorJS.FFmpegWasm\SpawnDev.BlazorJS.FFmpegWasm.csproj" />
 	</ItemGroup>
+	-->
 
 	<ItemGroup>
 	  <Folder Include="wwwroot\fonts\" />
