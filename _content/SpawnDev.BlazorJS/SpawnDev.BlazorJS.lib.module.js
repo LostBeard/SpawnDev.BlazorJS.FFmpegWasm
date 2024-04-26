@@ -1,55 +1,35 @@
-'use strict';
-// https://learn.microsoft.com/en-us/aspnet/core/blazor/javascript-interoperability/?view=aspnetcore-7.0#inject-a-script-after-blazor-starts
-
-// get the globalThis instance
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis
-function checkIfGlobalThis(it) {
-    // Math is known to exist as a global in every environment.
-    return it && it.Math === Math && it;
-}
-
-const globalObject =
-    // eslint-disable-next-line es/no-global-this -- safe
-    checkIfGlobalThis(typeof globalThis == 'object' && globalThis) ||
-    checkIfGlobalThis(typeof window == 'object' && window) ||
-    // eslint-disable-next-line no-restricted-globals -- safe
-    checkIfGlobalThis(typeof self == 'object' && self) ||
-    checkIfGlobalThis(typeof global == 'object' && global) ||
-    // eslint-disable-next-line no-new-func -- fallback
-    (function () { return this; })() || Function('return this')();
-
-var initFunc = function () {
-    if (globalObject.JSInterop) return;
+(() => {
+    if (globalThis.JSInterop) return;
     const JSInterop = {};
-    globalObject.JSInterop = JSInterop;
-    JSInterop.globalObject = globalObject;
+    globalThis.JSInterop = JSInterop;
+    JSInterop.globalThis = globalThis;
     JSInterop.debugLevel = 0;
     JSInterop.pathObjectInfo = function (rootObject, path) {
-        var parent = rootObject ?? globalObject;
-        var target;
-        var propertyName = null;
-        if (typeof path === 'string' && path.length) {
-            if (path === 'Symbol.asyncIterator' && parent !== null) {
-                // get the async iterator
-                target = parent[Symbol.asyncIterator]();
-            } else {
-                var parts = path.split('.');
-                propertyName = parts[parts.length - 1];
-                for (var i = 0; i < parts.length - 1; i++) {
-                    parent = parent[parts[i]];
-                }
-                target = parent[propertyName];
-            }
+        if (rootObject === null || rootObject === void 0) {
+            // callers must call with the globalThis if they wish to use it as the rootObject.
+            throw new DOMException('JSInterop.pathObjectInfo error: rootObject cannot be null');
         }
-        else if (typeof path === 'number') {
-            propertyName = path;
-            target = parent[propertyName];
-        } else {
+        var parent = rootObject;
+        var target;
+        var propertyName;
+        if (path === null || path === void (0)) {
+            // undefined and null can actually be property keys but that fact is ignored here atm
             target = parent;
             parent = null;
+        } else if (typeof path === 'string' && typeof parent[path] === 'undefined') {
+            var parts = path.split('.');
+            propertyName = parts[parts.length - 1];
+            for (var i = 0; i < parts.length - 1; i++) {
+                parent = parent[parts[i]];
+            }
+            target = parent[propertyName];
+        }
+        else {
+            propertyName = path;
+            target = parent[propertyName];
         }
         var targetType = typeof target;
-        var exists = targetType !== 'undefined' || (parent && propertyName && propertyName in parent);
+        var exists = targetType !== 'undefined' || (parent && propertyName in parent);
         return {
             parent,         // may be null even if target exists (Ex. if no path was given)
             propertyName,   // may be null even if target exists (Ex. if no path was given)
@@ -67,9 +47,9 @@ var initFunc = function () {
         return JSInterop.pathObjectInfo(rootObject, path).parent;
     };
 
-    JSInterop.setPromiseThenCatch = function(promise, thenCallback, catchCallback){
+    JSInterop.setPromiseThenCatch = function (promise, thenCallback, catchCallback) {
         promise.then(thenCallback).catch(function (ex) {
-            let err = "";
+            var err = "";
             if (ex) {
                 if (typeof ex == 'string') {
                     err = ex;
@@ -93,16 +73,47 @@ var initFunc = function () {
     };
 
     JSInterop._returnNew = function (obj, className, args, returnType) {
+        if (obj === null) obj = globalThis;
         var { target, parent, targetType } = JSInterop.pathObjectInfo(obj, className);
         var ret = !args ? new target() : new target(...args);
         return serializeToDotNet(ret, returnType);
     };
 
+    /**
+     * returns all properties of the target object (except symbols.) number properties are returned as strings.
+     * uses a combination of Reflect.ownKeys and the in operator as neither returns all properties of an object
+     * @param {any} obj
+     * @param {any} name
+     * @param {any} hasOwnProperty
+     * @returns string[]
+     */
     JSInterop._getPropertyNames = function (obj, name, hasOwnProperty) {
         var target = JSInterop.pathToTarget(obj, name);
-        var ret = Object.keys(target);
-        if (hasOwnProperty && target.hasOwnProperty) ret = ret.filter(o => target.hasOwnProperty(o));
-        return ret;
+        var keys = [];
+        if (hasOwnProperty && target.hasOwnProperty) {
+            for (var k in target) {
+                if (target.hasOwnProperty(k)) {
+                    keys.push(k);
+                }
+            }
+            var ownKeys = Reflect.ownKeys(target).filter(o => typeof o === 'string');
+            for (var k of ownKeys) {
+                if (keys.indexOf(k) == -1 && target.hasOwnProperty(k)) {
+                    keys.push(k);
+                }
+            }
+        } else {
+            for (var k in target) {
+                keys.push(k);
+            }
+            var ownKeys = Reflect.ownKeys(target).filter(o => typeof o === 'string');
+            for (var k of ownKeys) {
+                if (keys.indexOf(k) == -1) {
+                    keys.push(k);
+                }
+            }
+        }
+        return keys;
     };
 
     JSInterop._instanceof = function (obj, name) {
@@ -123,41 +134,68 @@ var initFunc = function () {
         return ret;
     };
 
-    function wrapFunction(fn) {
-        var retRef = {
-            __wrappedFunction: fn,
-            applyFn: function (thisObj, args) {
-                return fn.apply(thisObj, args);
-            }
-        };
-        return retRef;
+    function wrapJSObject(o) {
+        return { __wrappedJSObject: o };
+    }
+
+    function createJSObjectReferenceMustWrapType(typeofValue) {
+        switch (typeofValue) {
+            case 'object':
+                return false;
+                break;
+            case 'symbol':
+            case 'function':
+            case 'string':
+                return true;
+                break;
+            default:
+                return true;
+                break;
+        }
     }
 
     function serializeToDotNet(value, returnType) {
         var typeOfValue = typeof value;
         if (typeOfValue === 'undefined') {
+            typeOfValue = 'object';
             value = null;
-        } else if (typeOfValue === 'function') {
-            value = wrapFunction(value);
         }
         if (!returnType) {
             return value;
         }
-        let isOverridden = returnType >= 128;
+        var isOverridden = returnType >= 128;
+        var desiredType = isOverridden ? returnType - 128 : returnType;
+        switch (desiredType) {
+            case DotNet.JSCallResultType.Default:
+                break;
+            case DotNet.JSCallResultType.JSObjectReference:
+                if (createJSObjectReferenceMustWrapType(typeOfValue)) {
+                    value = wrapJSObject(value);
+                }
+                break;
+            case DotNet.JSCallResultType.JSStreamReference:
+                break;
+            case DotNet.JSCallResultType.JSVoidResult:
+                break;
+            default:
+                break;
+        }
         if (!isOverridden) {
             return value;
         }
-        let desiredType = returnType - 128;
+        // overridden so serialize it here
         switch (desiredType) {
             case DotNet.JSCallResultType.Default:
                 return value;
             case DotNet.JSCallResultType.JSObjectReference:
                 return value === null ? null : DotNet.createJSObjectReference(value);
-            case DotNet.JSCallResultType.JSStreamReference: {
-                const n = DotNet.createJSStreamReference(value),
-                    r = JSON.stringify(n);
-                return ct.js_string_to_mono_string(r)
-            }
+            case DotNet.JSCallResultType.JSStreamReference:
+                {
+                    // TODO test and fix if needed
+                    const n = DotNet.createJSStreamReference(value);
+                    const r = JSON.stringify(n);
+                    return BINDING.js_string_to_mono_string(r)
+                }
             case DotNet.JSCallResultType.JSVoidResult:
                 return null;
             default:
@@ -165,9 +203,16 @@ var initFunc = function () {
         }
     }
 
+    JSInterop._returnArrayJSObjectReferenceIds = function (obj) {
+        if (obj === null || obj === void 0) return null;
+        var ret = [];
+        for (var o of obj) ret.push(o === null || o === void 0 ? -1 : DotNet.createJSObjectReference(o).__jsObjectId);
+        return ret;
+    };
+
     // Instance
     JSInterop._set = function (obj, identifier, value) {
-        if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) throw 'obj null or undefined';
+        if (obj === void 0 || obj === null) throw 'obj null or undefined';
         var pathInfo = JSInterop.pathObjectInfo(obj, identifier);
         if (!pathInfo.exists) {
             if (JSInterop.debugLevel > 0) {
@@ -180,7 +225,7 @@ var initFunc = function () {
 
     JSInterop._get = function (obj, identifier, returnType) {
         var ret = null;
-        if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) throw 'obj null or undefined';
+        if (obj === void 0 || obj === null) throw 'obj null or undefined';
         var { target, parent, targetType } = JSInterop.pathObjectInfo(obj, identifier);
         if (targetType === "function") {
             ret = target.bind(parent);
@@ -192,7 +237,7 @@ var initFunc = function () {
 
     JSInterop._call = function (obj, identifier, args, returnType) {
         var ret = null;
-        if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) throw 'obj null or undefined';
+        if (obj === void 0 || obj === null) throw 'obj null or undefined';
         var { target, parent, targetType } = JSInterop.pathObjectInfo(obj, identifier);
         if (targetType === "function") {
             //var fnBound = target.bind(parent);
@@ -205,20 +250,28 @@ var initFunc = function () {
     };
 
     //Global
+    JSInterop._instanceofGlobal = function (identifier) {
+        return JSInterop._instanceof(globalThis, identifier);
+    };
+
+    JSInterop._typeofGlobal = function (identifier) {
+        return JSInterop._typeof(globalThis, identifier);
+    };
+
     JSInterop._setGlobal = function (identifier, value) {
-        JSInterop._set(globalObject, identifier, value);
+        JSInterop._set(globalThis, identifier, value);
     };
 
     JSInterop._deleteGlobal = function (identifier) {
-        JSInterop._delete(globalObject, identifier);
+        JSInterop._delete(globalThis, identifier);
     };
 
     JSInterop._getGlobal = function (identifier, returnType) {
-        return JSInterop._get(globalObject, identifier, returnType);
+        return JSInterop._get(globalThis, identifier, returnType);
     };
 
     JSInterop._callGlobal = function (identifier, args, returnType) {
-        return JSInterop._call(globalObject, identifier, args, returnType);
+        return JSInterop._call(globalThis, identifier, args, returnType);
     };
 
     const callbacks = {};
@@ -226,68 +279,44 @@ var initFunc = function () {
         if (callbacks[callbackerID]) delete callbacks[callbackerID];
     };
     DotNet.attachReviver(function (key, value) {
-        if (value && typeof value === 'object' && typeof value.__undefinedref__ !== 'undefined') {
-            return;
-        }
-        else 
-        if (value && typeof value === 'object' && typeof value.__wrappedFunction === 'function') {
-            return value.__wrappedFunction;
-        }
-        else if (value && typeof value === 'object' && typeof value._callbackId !== 'undefined') {
-            let callbackId = value._callbackId;
-            if (!callbacks[callbackId]) {
-                callbacks[callbackId] = function fn() {
+        if (value && typeof value === 'object') {
+            if ('_callbackId' in value) {
+                var callbackId = value._callbackId;
+                var callback = callbacks[callbackId];
+                if (callback) return callback;
+                callback = function fn() {
+                    if (callback !== callbacks[callbackId]) {
+                        console.warn('Disposed callback called.');
+                        return;
+                    }
                     var ret = null;
-                    if (!callbacks[callbackId] || fn !== callbacks[callbackId]) return;
                     var args = ["Invoke"];
-                    // When the Callback is created the argument types are enumerated so they can be passed back to .Net correctly when the callback is called
                     var paramTypes = value._paramTypes;
                     for (var i = 0; i < paramTypes.length; i++) {
                         var v = i < arguments.length ? arguments[i] : null;
-                        let jsCallResultType = paramTypes[i];
+                        var jsCallResultType = paramTypes[i];
                         v = serializeToDotNet(v, jsCallResultType);
                         args.push(v);
                     }
                     try {
-                        ret = value._callback.invokeMethod.apply(value._callback, args);// ('Callback.Invoke');
-                        if (!value._returnVoid) {
-                            return ret;
-                        }
+                        ret = value._callback.invokeMethod.apply(value._callback, args);
+                        if (!value._returnVoid) return ret;
                     } catch (ex) {
-                        if (args && args.length > 0) {
-                            console.log('args[0].constructor.name', args[0].constructor.name);
-                        }
-                        console.log(args);
-                        console.log('callback invokeMethod error:', ret, ex);
-                        //console.log('disposing callback');
-                        //value.isDisposed = true;    //
+                        console.error('Callback invokeMethod error:', args, ret, ex);
+                        //value.isDisposed = true;
                         //DisposeCallbacker(callbackId);
                     }
                 };
+                callbacks[callbackId] = callback;
+                return callback; 
             }
-            return callbacks[callbackId];
-        } else {
-            return value;
+            else if ('__wrappedJSObject' in value) {
+                return value.__wrappedJSObject;
+            }
+            else if ('__undefinedref__' in value) {
+                return;
+            }
         }
+        return value;
     });
-};
-initFunc();
-
-
-//export function beforeStart(options, extensions) {
-//    console.log("blazorjs beforeStart");
-//}
-
-//export function afterStarted(blazor) {
-
-//    Object.defineProperty(Blazor, 'DotNet', {
-//        value: globalThis.DotNet,
-//        writable: false,
-//    });
-//    ////console.log("blazorjs afterStarted");
-//    //if (typeof JSInterop._afterStarted === 'function') {
-//    //    let callback = JSInterop._afterStarted;
-//    //    delete JSInterop._afterStarted;
-//    //    callback();
-//    //}
-//}
+})();
