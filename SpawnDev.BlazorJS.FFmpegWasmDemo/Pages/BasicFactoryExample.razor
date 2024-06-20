@@ -35,47 +35,6 @@
 <p>@progressMessage</p>
 <p>Open Developer Tools (Ctrl+Shift+I) to View Logs</p>
 
-<table>
-    <thead>
-        <tr>
-            <th>Package</th>
-            <th>Description</th>
-            <th>Includes</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <strong>SpawnDev.BlazorJS.FFmpegWasm</strong> <br>
-                <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm" rel="nofollow">
-                    <img src="https://camo.githubusercontent.com/912d8f52e6e91dcb14e1ec293cc99ad9b7fa6599b3a9f85ae60a1980594468ea/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.svg" style="max-width: 100%;">
-                </a>
-            </td>
-            <td>ffmpeg.wasm for Blazor WASM</td>
-            <td>ffmpeg/*<br>ffmpeg.js<br>814.ffmpeg.js</td>
-        </tr>
-        <tr>
-            <td>
-                <strong>SpawnDev.BlazorJS.FFmpegWasm.Core</strong> <br>
-                <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.Core" rel="nofollow">
-                    <img src="https://camo.githubusercontent.com/3d5a593e7aef769123997cc9860cdce8a50026d5abada5f1b21b87a8555683ca/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e436f72652e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.Core.svg" style="max-width: 100%;">
-                </a>
-            </td>
-            <td>Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core resources</td>
-            <td>core/*<br>ffmpeg-core.js<br>ffmpeg-core.wasm</td>
-        </tr>
-        <tr>
-            <td>
-                <strong>SpawnDev.BlazorJS.FFmpegWasm.CoreMT</strong> <br>
-                <a href="https://www.nuget.org/packages/SpawnDev.BlazorJS.FFmpegWasm.CoreMT" rel="nofollow">
-                    <img src="https://camo.githubusercontent.com/9c5195371a9d889c7f874899e68ea2e9a45dea972bead8b97702f57d53b514fa/68747470733a2f2f62616467652e667572792e696f2f6e752f537061776e4465762e426c617a6f724a532e46466d7065675761736d2e436f72654d542e737667" alt="NuGet version" data-canonical-src="https://badge.fury.io/nu/SpawnDev.BlazorJS.FFmpegWasm.CoreMT.svg" style="max-width: 100%;">
-                </a>
-            </td>
-            <td>Includes SpawnDev.BlazorJS.FFmpegWasm and ffmpeg.wasm core-mt resources</td>
-            <td>core-mt/*<br>ffmpeg-core.js<br>ffmpeg-core.wasm<br>ffmpeg-core.worker.js</td>
-        </tr>
-    </tbody>
-</table>
 @code {
     [Inject]
     BlazorJSRuntime JS { get; set; }
