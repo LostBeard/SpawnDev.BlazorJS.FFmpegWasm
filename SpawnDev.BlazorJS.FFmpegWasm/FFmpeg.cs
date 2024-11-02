@@ -17,8 +17,8 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         public void On(string eventNam, Callback callback) => JSRef.CallVoid("on", eventNam , callback);
         public void Off(string eventNam, Callback callback) => JSRef.CallVoid("off", eventNam, callback);
 
-        public JSEventCallback<FFmpegLogEvent> OnLog { get => new JSEventCallback<FFmpegLogEvent>(o => On("log", o), o => Off("log", o)); set { /** set MUST BE HERE TO ENABLE += -= operands **/ } }
-        public JSEventCallback<FFmpegProgressEvent> OnProgress { get => new JSEventCallback<FFmpegProgressEvent>(o => On("progress", o), o => Off("progress", o)); set { /** set MUST BE HERE TO ENABLE += -= operands **/ } }
+        public ActionEvent<FFmpegLogEvent> OnLog { get => new ActionEvent<FFmpegLogEvent>(o => On("log", o), o => Off("log", o)); set { /** set MUST BE HERE TO ENABLE += -= operands **/ } }
+        public ActionEvent<FFmpegProgressEvent> OnProgress { get => new ActionEvent<FFmpegProgressEvent>(o => On("progress", o), o => Off("progress", o)); set { /** set MUST BE HERE TO ENABLE += -= operands **/ } }
 
         /// <summary>
         /// Terminate all ongoing API calls and terminate web worker. FFmpeg.load() must be called again before calling any other APIs
