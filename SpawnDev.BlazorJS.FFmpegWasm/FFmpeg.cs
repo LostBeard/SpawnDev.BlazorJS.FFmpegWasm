@@ -81,7 +81,6 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// <returns>0 if no error, != 0 if timeout (1) or error.</returns>
         public Task<int> FFprobe(IEnumerable<string> args, long timeout) => JSRef!.CallAsync<int>("ffprobe", args, timeout);
         #region FileSystemMethods
-        //
         /// <summary>
         /// Create a directory.
         /// </summary>
