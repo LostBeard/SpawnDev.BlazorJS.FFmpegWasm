@@ -19,7 +19,16 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// Constructs a new FFmpeg instance (umd version)
         /// </summary>
         public FFmpeg() : base(JS.New("FFmpegWASM.FFmpeg")) { }
+        /// <summary>
+        /// Loads ffmpeg-core inside web worker. It is required to call this method first as it initializes WebAssembly and other essential variables.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public Task<bool> Load(FFMessageLoadConfig config) => JSRef!.CallAsync<bool>("load", config);
+        /// <summary>
+        /// Loads ffmpeg-core inside web worker. It is required to call this method first as it initializes WebAssembly and other essential variables.
+        /// </summary>
+        /// <returns></returns>
         public Task<bool> Load() => JSRef!.CallAsync<bool>("load");
         /// <summary>
         /// Add an event listener
@@ -41,12 +50,10 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// Progress event handler
         /// </summary>
         public ActionEvent<FFmpegProgressEvent> OnProgress { get => new ActionEvent<FFmpegProgressEvent>(o => On("progress", o), o => Off("progress", o)); set { /** set MUST BE HERE TO ENABLE += -= operands **/ } }
-
         /// <summary>
         /// Terminate all ongoing API calls and terminate web worker. FFmpeg.load() must be called again before calling any other APIs
         /// </summary>
         public void Terminate() => JSRef!.CallVoid("terminate");
-
         /// <summary>
         /// Execute ffmpeg command.
         /// </summary>
@@ -60,7 +67,19 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// <param name="args">ffmpeg command line args</param>
         /// <returns>0 if no error, != 0 if timeout (1) or error.</returns>
         public Task<int> Exec(IEnumerable<string> args) => JSRef!.CallAsync<int>("exec", args);
-
+        /// <summary>
+        /// Execute ffprobe command.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>0 if no error, != 0 if timeout (1) or error.</returns>
+        public Task<int> FFprobe(IEnumerable<string> args) => JSRef!.CallAsync<int>("ffprobe", args);
+        /// <summary>
+        /// Execute ffprobe command.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="timeout"></param>
+        /// <returns>0 if no error, != 0 if timeout (1) or error.</returns>
+        public Task<int> FFprobe(IEnumerable<string> args, long timeout) => JSRef!.CallAsync<int>("ffprobe", args, timeout);
         #region FileSystemMethods
         //
         /// <summary>
@@ -95,14 +114,48 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// <returns></returns>
         public Task<bool> DeleteFile(string path) => JSRef!.CallAsync<bool>("deleteFile", path);
         // Read
-        public Task<string> ReadFileUTF8(string path) => JSRef!.CallAsync<string>("readFile", path, "utf8");
-        public Task<Uint8Array> ReadFileUint8Array(string path) => JSRef!.CallAsync<Uint8Array>("readFile", path, "binary");
-        public Task<byte[]> ReadFileBytes(string path) => JSRef!.CallAsync<byte[]>("readFile", path, "binary");
+        /// <summary>
+        /// Read data from ffmpeg.wasm.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path"></param>
+        /// <param name="encoding">File content encoding, supports two encodings: - utf8: read file as text file, return data in string type. - binary: read file as binary file, return data in Uint8Array type. Default Value binary</param>
+        /// <returns></returns>
+        public Task<T> ReadFile<T>(string path, string encoding) => JSRef!.CallAsync<T>("readFile", path, encoding);
+        /// <summary>
+        /// Read data from ffmpeg.wasm.
+        /// </summary>
+        public Task<string> ReadFileUTF8(string path) => ReadFile<string>(path, "utf8");
+        /// <summary>
+        /// Read data from ffmpeg.wasm.
+        /// </summary>
+        public Task<Uint8Array> ReadFile(string path) => ReadFile<Uint8Array>(path, "binary");
+        /// <summary>
+        /// Read data from ffmpeg.wasm.
+        /// </summary>
+        public Task<byte[]> ReadFileBytes(string path) => ReadFile<byte[]>(path, "binary");
         // Write
+        /// <summary>
+        /// Write data to ffmpeg.wasm.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public Task<bool> WriteFile(string path, string data) => JSRef!.CallAsync<bool>("writeFile", path, data);
+        /// <summary>
+        /// Write data to ffmpeg.wasm.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public Task<bool> WriteFile(string path, Uint8Array data) => JSRef!.CallAsync<bool>("writeFile", path, data);
+        /// <summary>
+        /// Write data to ffmpeg.wasm.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public Task<bool> WriteFile(string path, byte[] data) => JSRef!.CallAsync<bool>("writeFile", path, data);
-
         /// <summary>
         /// Allows mounting of WORKERFS in supported builds of ffmpeg.wasm
         /// </summary>
@@ -110,7 +163,7 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// <param name="options"></param>
         /// <param name="mountPoint"></param>
         /// <returns></returns>
-        public Task<bool> Mount(string fsType, FSMountOptions options, string mountPoint) => JSRef!.CallAsync<bool>("mount", fsType, options, mountPoint);
+        public Task<bool> Mount(EnumString<FFFSType> fsType, FSMountOptions options, string mountPoint) => JSRef!.CallAsync<bool>("mount", fsType, options, mountPoint);
         /// <summary>
         /// Use to unmount a mounted filesystem
         /// </summary>
@@ -123,7 +176,7 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// <param name="mountPoint"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public Task<bool> MountWorkerFS(string mountPoint, FSMountWorkerFSOptions options) => JSRef!.CallAsync<bool>("mount", "WORKERFS", options, mountPoint);
+        public Task<bool> MountWorkerFS(string mountPoint, FSMountWorkerFSOptions options) => Mount(FFFSType.WORKERFS, options, mountPoint);
         #endregion
     }
 }
