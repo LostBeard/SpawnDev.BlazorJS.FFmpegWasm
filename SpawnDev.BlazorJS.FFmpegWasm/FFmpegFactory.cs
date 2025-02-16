@@ -31,7 +31,7 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
             FFmpegWasmConfig = ffmpegLoadConfig ?? new FFmpegWasmConfig();
             JS = js;
             BaseAddress = new Uri(navigationManager.BaseUri);
-            MultiThreadSupported = JS.CrossOriginIsolated && !JS.IsUndefined(nameof(SharedArrayBuffer));
+            MultiThreadSupported = JS.CrossOriginIsolated == true && !JS.IsUndefined(nameof(SharedArrayBuffer));
         }
 
         /// <summary>

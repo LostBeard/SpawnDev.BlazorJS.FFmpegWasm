@@ -15,7 +15,7 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
 
         /// <summary>
         /// `814.ffmpeg.js` URL (UMD version).<br />
-        /// This is the script used for the primary ffmpeg worker. The UMD ffmpeg.wasm release has it named '814.ffmpeg.js' and<br /?
+        /// This is the script used for the primary ffmpeg worker. The UMD ffmpeg.wasm release has it named '814.ffmpeg.js' and<br/>
         /// it is usually stored in the same folder as ffmpeg.js
         /// Passed to ffmpeg.load call
         /// </summary>
