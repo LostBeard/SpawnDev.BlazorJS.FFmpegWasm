@@ -59,8 +59,17 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// </summary>
         /// <param name="args">ffmpeg command line args</param>
         /// <param name="timeout">milliseconds to wait before stopping the command execution. Default Value -1</param>
+        /// <param name="options"></param>
         /// <returns>0 if no error, != 0 if timeout (1) or error.</returns>
-        public Task<int> Exec(IEnumerable<string> args, long timeout) => JSRef!.CallAsync<int>("exec", args, timeout);
+        public Task<int> Exec(IEnumerable<string> args, long timeout = -1, FFMessageOptions? options = null) => options == null ? JSRef!.CallAsync<int>("exec", args, timeout) : JSRef!.CallAsync<int>("exec", args, timeout, options);
+        /// <summary>
+        /// Execute ffmpeg command.
+        /// </summary>
+        /// <param name="args">ffmpeg command line args</param>
+        /// <param name="timeout">milliseconds to wait before stopping the command execution. Default Value -1</param>
+        /// <param name="signal">Abort signal for the command</param>
+        /// <returns>0 if no error, != 0 if timeout (1) or error.</returns>
+        public Task<int> Exec(IEnumerable<string> args, long timeout = -1, AbortSignal? signal = null) => signal == null ? JSRef!.CallAsync<int>("exec", args, timeout) : JSRef!.CallAsync<int>("exec", args, timeout, new { Signal = signal });
         /// <summary>
         /// Execute ffmpeg command.
         /// </summary>
@@ -124,11 +133,15 @@ namespace SpawnDev.BlazorJS.FFmpegWasm
         /// <summary>
         /// Read data from ffmpeg.wasm.
         /// </summary>
-        public Task<string> ReadFileUTF8(string path) => ReadFile<string>(path, "utf8");
+        public Task<string> ReadFileUTF8(string path) => ReadFile<string>(path, "utf8"); 
         /// <summary>
         /// Read data from ffmpeg.wasm.
         /// </summary>
         public Task<Uint8Array> ReadFile(string path) => ReadFile<Uint8Array>(path, "binary");
+        /// <summary>
+        /// Read data from ffmpeg.wasm.
+        /// </summary>
+        public Task<Uint8Array> ReadFileUint8Array(string path) => ReadFile<Uint8Array>(path, "binary");
         /// <summary>
         /// Read data from ffmpeg.wasm.
         /// </summary>

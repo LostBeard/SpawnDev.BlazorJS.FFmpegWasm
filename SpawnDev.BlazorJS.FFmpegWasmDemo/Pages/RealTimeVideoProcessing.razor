@@ -1,0 +1,151 @@
+﻿@page "/RealTimeVideoProcessing"
+@using SpawnDev.BlazorJS.JSObjects
+@implements IDisposable
+
+<div>
+    <div>
+        In this demo, each webcam video frame is converted to greyscale using FFmpegWasm and TransformStream.
+    </div>
+    <div>
+        <video width="640" @ref=videoRef autoplay muted playsinline></video>
+    </div>
+</div>
+
+@code {
+    // Based on:
+    // Real-time video filters in browsers with FFmpeg and webcodecs
+    // https://transloadit.com/devtips/real-time-video-filters-in-browsers-with-ffmpeg-and-webcodecs/
+    [Inject]
+    BlazorJSRuntime JS { get; set; } = default!; 
+
+    [Inject]
+    FFmpegFactory FFmpegFactory { get; set; } = default!;
+
+    MediaStream? stream = null;
+    TransformStreamCallbacks? transformerCallbacks = null;
+    TransformStream? transformStream = null;
+    Task? transformerTask = null;
+    ElementReference videoRef;
+    HTMLVideoElement? video;
+    FFmpeg? ffmpeg = null;
+    Window? window = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            window = JS.Get<Window>("window");
+            video = new HTMLVideoElement(videoRef);
+
+            // load ffmpeg libs
+            await FFmpegFactory.Init();
+
+            // create ffmpeg instance
+            ffmpeg = new FFmpeg();
+
+            // load ffmpeg config
+            var loadConfig = FFmpegFactory.CreateLoadCoreConfig();
+            await ffmpeg.Load(loadConfig);
+
+            transformerCallbacks = new TransformStreamCallbacks(Transformer_Start, Transformer_Transform, Transformer_Flush);
+            // Start the video stream
+            using var navigator = JS.Get<Navigator>("navigator");
+            stream = await navigator.MediaDevices.GetUserMedia(new { video = true });
+            if (stream != null)
+            {
+                var inputTrack = stream.GetFirstVideoTrack();
+                var processor = new MediaStreamTrackProcessor(new MediaStreamTrackProcessorOptions { Track = inputTrack });
+                var generator = new MediaStreamTrackGenerator(new MediaStreamTrackGeneratorOptions { Kind = "video" });
+
+                transformStream = new TransformStream(transformerCallbacks);
+                // Pipe the processor through the transformer to the generator
+                transformerTask = processor.Readable.PipeThrough(transformStream).PipeTo(generator.Writable);
+
+                // Display the output stream in the video element
+                video.SrcObject = new MediaStream([generator]);
+                await video.Play();
+            }
+        }
+    }
+    async Task Transformer_Start(TransformStreamDefaultController controller)
+    {
+        Console.WriteLine("Transformer_Start");
+    }
+    async Task Transformer_Transform(VideoFrame chunk, TransformStreamDefaultController controller)
+    {
+        if (ffmpeg == null || window == null)
+        {
+            controller.Error("FFmpeg or Window not initialized.");
+            return;
+        }
+        try
+        {
+            var w = chunk.DisplayWidth;
+            var h = chunk.DisplayHeight;
+            using var canvas = new OffscreenCanvas(w, h);
+            using var ctx = canvas.Get2DContext();
+            ctx.DrawImage(chunk, 0, 0, w, h);
+
+            // Convert canvas to PNG Blob, then ArrayBuffer
+            using var blob = await canvas.ConvertToBlob(new ConvertToBlobOptions { Type = "image/png" });
+            using var arrayBuffer = await blob.ArrayBuffer();
+
+            // Write input PNG to FFmpeg"s virtual filesystem
+            var inputFilename = "in.png";
+            var outputFilename = "out.png";
+            await ffmpeg.WriteFile(inputFilename, new Uint8Array(arrayBuffer));
+
+            // Execute FFmpeg command (grayscale filter)
+            // Note: This is the performance bottleneck
+            await ffmpeg.Exec(["-i", inputFilename, "-vf", "hue=s=0", outputFilename]);
+
+            // Read the processed PNG file
+            using var outputData = await ffmpeg.ReadFile(outputFilename);
+
+            // Clean up files in virtual filesystem
+            await ffmpeg.DeleteFile(inputFilename);
+            await ffmpeg.DeleteFile(outputFilename);
+
+            // Create an ImageBitmap from the output PNG data
+            using var outputBlob = new Blob(new ArrayBuffer[] { outputData.Buffer }, new BlobOptions { Type = "image/png" });
+
+            using var bitmap = await window.CreateImageBitmap(outputBlob);
+
+            // Create a new VideoFrame with the processed bitmap
+            using var newFrame = new VideoFrame(bitmap, new VideoFrameOptions
+            {
+                Timestamp = (int)chunk.Timestamp,
+                Duration = (int)chunk.Duration,
+            });
+
+            // Enqueue the new frame into the output stream
+            controller.Enqueue(newFrame);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error processing video frame: {ex.Message}");
+        }
+        finally
+        {
+            chunk.Close(); // Dispose the VideoFrame to free resources
+        }
+        //chunk.Close(); // Close the chunk after processing
+    }
+    async Task Transformer_Flush(TransformStreamDefaultController controller)
+    {
+        Console.WriteLine("Transformer_Flush");
+    }
+    public void Dispose()
+    {
+        // Clean up resources if necessary
+        if (stream != null)
+        {
+            stream.StopAllTracks();
+            stream.Dispose();
+        }
+        video?.Dispose();
+        window?.Dispose();
+        transformStream?.Dispose();
+        transformerCallbacks?.Dispose();
+    }
+}
