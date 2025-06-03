@@ -129,7 +129,6 @@
         {
             chunk.Close(); // Dispose the VideoFrame to free resources
         }
-        //chunk.Close(); // Close the chunk after processing
     }
     async Task Transformer_Flush(TransformStreamDefaultController controller)
     {
@@ -147,5 +146,6 @@
         window?.Dispose();
         transformStream?.Dispose();
         transformerCallbacks?.Dispose();
+        ffmpeg?.Dispose();
     }
 }
