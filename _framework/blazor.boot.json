@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "SpawnDev.BlazorJS.FFmpegWasmDemo",
   "resources": {
-    "hash": "sha256-rOhXZCGEXgKRJNyMHS49TEc9wh0UOVD/X8BlYZQXNQY=",
+    "hash": "sha256-XEf+RQKO+RHE+RrVgZgxcr3oUxA9w5yuUSJZTnVxZwY=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-AnPQtEN9rGUfgtP7261KjemEatISV2rDxhwf960lvG0="
     },
@@ -56,10 +56,10 @@
       "System.Text.RegularExpressions.wasm": "sha256-c3h/tTlNHa9/zCgO13AliAsb9i05sxT4DJRpM1SouQI=",
       "System.Threading.wasm": "sha256-uEADCjlSlo/6vVBIX8IqabSf+UEtazcpcP5TNzWVyVw=",
       "System.Private.CoreLib.wasm": "sha256-ppYZBfFV+S7BSsuUexcCCjGTllzV03o7pcp8p2BC9K0=",
-      "SpawnDev.BlazorJS.FFmpegWasm.Core.wasm": "sha256-754zSml2fTiJVlfnLle2UFVfrm6APrjK2isDPsF8lbI=",
-      "SpawnDev.BlazorJS.FFmpegWasm.CoreMT.wasm": "sha256-wo4gEhfIzjEnG3wvJlmJ8ZIoJ1cpFZ28V1z6+ab4eGM=",
-      "SpawnDev.BlazorJS.FFmpegWasm.wasm": "sha256-N9Au9rk8S2iZGsCpHDR9E7vifytwFPz/VWwFyrIj5ro=",
-      "SpawnDev.BlazorJS.FFmpegWasmDemo.wasm": "sha256-n5wjimXAmQiMbp8/PF0SWz2BU6FP6L1IP3la5CrLVDo="
+      "SpawnDev.BlazorJS.FFmpegWasm.Core.wasm": "sha256-0Wsgih39VQ9sJztt9+EQLz/DIM0jXRdYPfgNzve4e/8=",
+      "SpawnDev.BlazorJS.FFmpegWasm.CoreMT.wasm": "sha256-DVYetTO1mfvrdAot4h+NfoG0o+yfRLrtYxit1rm8meI=",
+      "SpawnDev.BlazorJS.FFmpegWasm.wasm": "sha256-0887kD7JZ2bpJ/pFjVL59FhangPJR0QFO2Jt0vfytLo=",
+      "SpawnDev.BlazorJS.FFmpegWasmDemo.wasm": "sha256-orZDZhKsBR1lFgLq4acOUXKPKAU+U+JFPBJJZp8dh+E="
     },
     "libraryInitializers": {
       "SpawnDev.BlazorJS.1kohsulca1.lib.module.js": "sha256-b0WR5Fb08OK+FgLPLG33kE1Pca2blPel5Q4FZnjb5W0="
