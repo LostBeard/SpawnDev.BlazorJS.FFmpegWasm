@@ -53,9 +53,9 @@
             stream = await navigator.MediaDevices.GetUserMedia(new { video = true });
             if (stream != null)
             {
-                var inputTrack = stream.GetFirstVideoTrack();
-                var processor = new MediaStreamTrackProcessor(new MediaStreamTrackProcessorOptions { Track = inputTrack });
-                var generator = new MediaStreamTrackGenerator(new MediaStreamTrackGeneratorOptions { Kind = "video" });
+                using var inputTrack = stream.GetFirstVideoTrack();
+                using var processor = new MediaStreamTrackProcessor(new MediaStreamTrackProcessorOptions { Track = inputTrack });
+                using var generator = new MediaStreamTrackGenerator(new MediaStreamTrackGeneratorOptions { Kind = "video" });
 
                 transformStream = new TransformStream(transformerCallbacks);
                 // Pipe the processor through the transformer to the generator
