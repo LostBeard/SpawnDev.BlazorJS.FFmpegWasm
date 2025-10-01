@@ -47,7 +47,7 @@
             var loadConfig = FFmpegFactory.CreateLoadCoreConfig();
             await ffmpeg.Load(loadConfig);
 
-            transformerCallbacks = new TransformStreamCallbacks(Transformer_Start, Transformer_Transform, Transformer_Flush);
+            transformerCallbacks = new TransformStreamCallbacks(transform: Transformer_Transform);
             // Start the video stream
             using var navigator = JS.Get<Navigator>("navigator");
             stream = await navigator.MediaDevices.GetUserMedia(new { video = true });
@@ -67,15 +67,12 @@
             }
         }
     }
-    async Task Transformer_Start(TransformStreamDefaultController controller)
-    {
-        Console.WriteLine("Transformer_Start");
-    }
     async Task Transformer_Transform(VideoFrame chunk, TransformStreamDefaultController controller)
     {
         if (ffmpeg == null || window == null)
         {
             controller.Error("FFmpeg or Window not initialized.");
+            chunk.Close(); // Dispose the VideoFrame to free resources
             return;
         }
         try
@@ -114,8 +111,8 @@
             // Create a new VideoFrame with the processed bitmap
             using var newFrame = new VideoFrame(bitmap, new VideoFrameOptions
             {
-                Timestamp = (int)chunk.Timestamp,
-                Duration = (int)chunk.Duration,
+                Timestamp = chunk.Timestamp,
+                Duration = chunk.Duration,
             });
 
             // Enqueue the new frame into the output stream
@@ -129,10 +126,6 @@
         {
             chunk.Close(); // Dispose the VideoFrame to free resources
         }
-    }
-    async Task Transformer_Flush(TransformStreamDefaultController controller)
-    {
-        Console.WriteLine("Transformer_Flush");
     }
     public void Dispose()
     {
