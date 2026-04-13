@@ -199,7 +199,7 @@ BasicExample.razor
             // a quick patch to allow us the ability to specify the full path to the primary ffmpeg worker (814.ffmpeg.js in umd version) via our FFMessageLoadConfig
             // the ffmpeg.js script tries to build the path location itself (with the code being replaced) but will fail (in our scenario) so we patch it to allow us to specify the path
             // essentially the same as Pull request #562 (https://github.com/ffmpegwasm/ffmpeg.wasm/pull/562) except this works on the minified UMD version
-            var FFmpegObjUrl = await ToBlobURL($"{baseURLFFmpeg}/ffmpeg.js", "application/javascript", (js) => js.Replace("new Worker(new URL(e.p+e.u(814),e.b),{type:void 0})", "new Worker(r.worker814URL,{type:void 0})"));
+            var FFmpegObjUrl = await ToBlobURL($"{baseURLFFmpeg}/ffmpeg.js", "application/javascript", (js) => js.Replace("new Worker(new URL(e.p+e.u(814),e.b),{type:void 0})", "new Worker(r.workerLoadURL,{type:void 0})"));
             await JS.Import(FFmpegObjUrl);
             URL.RevokeObjectURL(FFmpegObjUrl);
         }
@@ -208,7 +208,7 @@ BasicExample.razor
         ffmpeg.OnProgress += FFmpeg_OnProgress;
         await ffmpeg.Load(new FFMessageLoadConfig
             {
-                Worker814URL = await ToBlobURL($"{baseURLFFmpeg}/814.ffmpeg.js", "application/javascript"),
+                WorkerLoadURL = await ToBlobURL($"{baseURLFFmpeg}/814.ffmpeg.js", "application/javascript"),
                 CoreURL = await ToBlobURL($"{baseURLCore}/ffmpeg-core.js", "application/javascript"),
                 WasmURL = await ToBlobURL($"{baseURLCore}/ffmpeg-core.wasm", "application/wasm"),
             });
